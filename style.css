@@ -47,9 +47,15 @@ body {
 }
 
 #map {
-	width: 67%;
-	height: 95%;
-	align-content: left;
+	float:left;
+	width:100%;
+}
+
+#charts {
+	background-color: rgb(70, 70, 80);
+	float:right;
+	padding-left: 20px;
+	width:33%;
 }
 
 .sphere {

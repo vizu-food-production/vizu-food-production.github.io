@@ -21,15 +21,22 @@
 <button type="button" id="ssp5">SSP5</button>
 
 <br>
-
-
-<div id="map" viewBox="0 0 360 180">
-
+<div id="map">
+<div id="charts">
+	<p>Predicted proportion of Calorie production by continent</p>
+	<div id="chart1"></div>
+	<p>Calorie production variation by continent</p>
+  <div id="chart2"></div>
+	<p>Predicted calorie Suffiency by continent</p>
+  <div id="chart3"></div>
 </div>
-
-
+<div id="chart2"></div>
+</div>
 <script src="lib/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
 <script src="https://unpkg.com/topojson@3"></script>
 <script src="map.js"></script>
+<script src = "lib/crossfilter.js"></script>
+<script src ="lib/dc.js"></script>
 </body>
 </html>
