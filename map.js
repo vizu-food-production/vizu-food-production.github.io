@@ -40,8 +40,6 @@ class Map {
   constructor() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    console.log('width: ' + this.width)
-    console.log('heigh: ' + this.height)
     this.projection = d3.geoEqualEarth()
       .translate([4 * this.width / 9, this.height / 2])
       .scale((this.width) / 5);
@@ -60,12 +58,12 @@ class Map {
 
     this.predefined_zoom_levels = {
       'World':         {'x': 0,                      'y': 0,                       'k': 1},
-      'Europe':        {'x': -1.611 * this.width,    'y': -0.373921 * this.height, 'k': 4.5},
-      'Africa':        {'x': -0.527344 * this.width, 'y': -0.503356 * this.height, 'k': 2},
-      'Asia':          {'x': -0.805664 * this.width, 'y': -0.131352 * this.height, 'k': 1.8},
-      'North America': {'x': 0.13916 * this.width,   'y': -0.153404 * this.height, 'k': 2.2},
-      'South America': {'x': 0.007324 * this.width,  'y': -0.824545 * this.height, 'k': 2},
-      'Oceania':       {'x': -2.40967 * this.width,  'y': -1.62991 * this.height,  'k': 3.15}
+      'Europe':        {'x': -4.009*this.projection([15.36, 49.194])[0]   + this.width/2, 'y': -4.009*this.projection([15.36, 49.194])[1]   + this.height/2, 'k': 4.009},
+      'Africa':        {'x': -1.496*this.projection([19.25,  0.442])[0]   + this.width/2, 'y': -1.496*this.projection([19.25,  0.442])[1]   + this.height/2, 'k': 1.496},
+      'Asia':          {'x': -1.604*this.projection([78.76, 25.003])[0]   + this.width/2, 'y': -1.604*this.projection([78.76, 25.003])[1]   + this.height/2, 'k': 1.604},
+      'North America': {'x': -2.076*this.projection([-78.23, 32.262])[0]  + this.width/2, 'y': -2.076*this.projection([-78.23, 32.262])[1]  + this.height/2, 'k': 2.076},
+      'South America': {'x': -1.782*this.projection([-62.76, -20.891])[0] + this.width/2, 'y': -1.782*this.projection([-62.76, -20.891])[1] + this.height/2, 'k': 1.782},
+      'Oceania':       {'x': -2.649*this.projection([147.18, -25.378])[0] + this.width/2, 'y': -2.649*this.projection([147.18, -25.378])[1] + this.height/2, 'k': 2.649}
     }
   }
 
