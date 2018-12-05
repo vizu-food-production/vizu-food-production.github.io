@@ -71,6 +71,9 @@ body {
   cursor: pointer;
 }
 
+#analytics_container {
+	padding-left: 3%;
+}
 
 .sphere {
   fill: rgb(40, 40, 40);

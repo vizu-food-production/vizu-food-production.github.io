@@ -16,6 +16,7 @@ function whenDocumentLoaded(action) {
 }
 
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
+  draw_charts(climate_scenario, region, region_type)
   let data = [];
   d3.csv(path_to_data, function(csv) {
       let change_in_prod = parseFloat(csv.percent_change_in_production)
@@ -57,13 +58,41 @@ class Map {
     this.region_type = 'Global'
 
     this.predefined_zoom_levels = {
-      'World':         {'x': 0,                      'y': 0,                       'k': 1},
-      'Europe':        {'x': -4.009*this.projection([15.36, 49.194])[0]   + this.width/2, 'y': -4.009*this.projection([15.36, 49.194])[1]   + this.height/2, 'k': 4.009},
-      'Africa':        {'x': -1.496*this.projection([19.25,  0.442])[0]   + this.width/2, 'y': -1.496*this.projection([19.25,  0.442])[1]   + this.height/2, 'k': 1.496},
-      'Asia':          {'x': -1.604*this.projection([78.76, 25.003])[0]   + this.width/2, 'y': -1.604*this.projection([78.76, 25.003])[1]   + this.height/2, 'k': 1.604},
-      'North America': {'x': -2.076*this.projection([-78.23, 32.262])[0]  + this.width/2, 'y': -2.076*this.projection([-78.23, 32.262])[1]  + this.height/2, 'k': 2.076},
-      'South America': {'x': -1.782*this.projection([-62.76, -20.891])[0] + this.width/2, 'y': -1.782*this.projection([-62.76, -20.891])[1] + this.height/2, 'k': 1.782},
-      'Oceania':       {'x': -2.649*this.projection([147.18, -25.378])[0] + this.width/2, 'y': -2.649*this.projection([147.18, -25.378])[1] + this.height/2, 'k': 2.649}
+      'World': {
+        'x': 0,
+        'y': 0,
+        'k': 1
+      },
+      'Europe': {
+        'x': -4.009 * this.projection([15.36, 49.194])[0] + this.width / 2,
+        'y': -4.009 * this.projection([15.36, 49.194])[1] + this.height / 2,
+        'k': 4.009
+      },
+      'Africa': {
+        'x': -1.496 * this.projection([19.25, 0.442])[0] + this.width / 2,
+        'y': -1.496 * this.projection([19.25, 0.442])[1] + this.height / 2,
+        'k': 1.496
+      },
+      'Asia': {
+        'x': -1.604 * this.projection([78.76, 25.003])[0] + this.width / 2,
+        'y': -1.604 * this.projection([78.76, 25.003])[1] + this.height / 2,
+        'k': 1.604
+      },
+      'North America': {
+        'x': -2.076 * this.projection([-78.23, 32.262])[0] + this.width / 2,
+        'y': -2.076 * this.projection([-78.23, 32.262])[1] + this.height / 2,
+        'k': 2.076
+      },
+      'South America': {
+        'x': -1.782 * this.projection([-62.76, -20.891])[0] + this.width / 2,
+        'y': -1.782 * this.projection([-62.76, -20.891])[1] + this.height / 2,
+        'k': 1.782
+      },
+      'Oceania': {
+        'x': -2.649 * this.projection([147.18, -25.378])[0] + this.width / 2,
+        'y': -2.649 * this.projection([147.18, -25.378])[1] + this.height / 2,
+        'k': 2.649
+      }
     }
   }
 
@@ -123,9 +152,9 @@ class Map {
     dataPoints
       .enter().append('polygon')
       .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-                           context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-                           context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-                           context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+        context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
       .style('fill', d => colorScale(d.percent_change_in_production))
       .attr('transform', context.transform)
       .attr('opacity', 0)
@@ -137,9 +166,9 @@ class Map {
       .transition()
       .duration(1000)
       .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-                           context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-                           context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-                           context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+        context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
       .attr('transform', context.transform)
       .style('fill', d => colorScale(d.percent_change_in_production));
 
@@ -169,15 +198,23 @@ class Map {
   }
 }
 
-function draw_charts(ssp_type) {
-  draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Share of calorie production (%)")
-  draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation in calorie production (%)")
-  draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)")
+function draw_charts(ssp_type, region, region_type) {
+  document.getElementById("analytics_title").innerHTML = region;
+  if (region_type == 'None' || region_type == 'Global') {
+    document.getElementById("chart1").style.display = 'block';
+    draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Share of calorie production (%)")
+    draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation in calorie production (%)")
+    draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)")
+  } else if (region_type == 'Continent') {
+    document.getElementById("chart1").style.display = 'none';
+  } else {
+
+  }
 }
 
 function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
   let chart = dc.barChart(chartdiv);
-  d3.csv("data/graph/graph_continent_data_ssp" + ssp_type + ".csv").then(function(continents) {
+  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
     continents.forEach(function(x) {
       x[yvalues] = +x[yvalues];
     });
@@ -224,22 +261,25 @@ function load_country_polygons(countries, countries_to_continent) {
 }
 
 function inside(point, vs) {
-    // ray-casting algorithm based on
-    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+  // ray-casting algorithm based on
+  // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 
-    let x = point[0], y = point[1];
+  let x = point[0],
+    y = point[1];
 
-    let inside = false;
-    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-        let xi = vs[i][0], yi = vs[i][1];
-        let xj = vs[j][0], yj = vs[j][1];
+  let inside = false;
+  for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+    let xi = vs[i][0],
+      yi = vs[i][1];
+    let xj = vs[j][0],
+      yj = vs[j][1];
 
-        let intersect = ((yi > y) != (yj > y))
-            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
+    let intersect = ((yi > y) != (yj > y)) &&
+      (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
 
-    return inside;
+  return inside;
 };
 
 whenDocumentLoaded(() => {
@@ -307,7 +347,7 @@ whenDocumentLoaded(() => {
       map.display_data(data, 'World', 'Global', 'SSP1')
       mark_active(ssp1)
 
-      draw_charts('1')
+      draw_charts(map.climate_scenario, map.region, map.region_type)
     });
 
   function zoomed() {
@@ -370,12 +410,10 @@ whenDocumentLoaded(() => {
           if (region_found && !remove_region) {
             // We show the continent either if we currently have a global view or a view on another continent
             if (map.region_type == 'None' || map.region_type == 'Global' ||
-               (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
-               (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region]))
-            {
+              (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
+              (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region])) {
               updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
-            }
-            else {
+            } else {
               updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + key + ".csv", key, 'Country', map.climate_scenario)
             }
           }
@@ -386,12 +424,11 @@ whenDocumentLoaded(() => {
 
     if (!region_found) {
       if (map.region_type == 'Country') {
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__"+countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
+        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
       } else if (map.region_type == 'Continent' || map.region_type == 'None') {
         updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__World.csv", 'World', 'Global', map.climate_scenario)
       }
-    }
-    else if (remove_region) {
+    } else if (remove_region) {
       map.clear_data()
     }
   })
@@ -423,26 +460,28 @@ whenDocumentLoaded(() => {
   enable_continent_event(map, sa, 'South America')
   enable_continent_event(map, oc, 'Oceania')
 
-  $("#right_panel").click(function(){
+  $("#right_panel").click(function() {
     let id = $(this).attr("href").substring(1);
-    $("html, body").animate({ scrollTop: $("#"+id).offset().top }, 1000, function(){
+    $("html, body").animate({
+      scrollTop: $("#" + id).offset().top
+    }, 1000, function() {
       $("#right_panel").slideReveal("hide");
     });
   });
 
   let slider = $("#right_panel").slideReveal({
-          // width: 100,
-          push: false,
-          position: "right",
-          // speed: 600,
-          trigger: $(".handle"),
-          // autoEscape: false,
-          shown: function(obj){
-            obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-right"></span>');
-          },
-          hidden: function(obj){
-            obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-left"></span>');
-          }
-        });
+    // width: 100,
+    push: false,
+    position: "right",
+    // speed: 600,
+    trigger: $(".handle"),
+    // autoEscape: false,
+    shown: function(obj) {
+      obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-right"></span>');
+    },
+    hidden: function(obj) {
+      obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-left"></span>');
+    }
+  });
 
 });
