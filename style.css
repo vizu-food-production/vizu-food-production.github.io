@@ -53,8 +53,6 @@ body {
 	height: 100%;
 }
 
-
-
 #right_panel {
 	width: 33% !important;
 	background-color: rgb(70, 70, 80);
@@ -89,6 +87,10 @@ body {
   stroke-linejoin: round;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
+}
+
+#analytics_container button {
+	color: #000000;
 }
 
 /*
