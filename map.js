@@ -90,9 +90,6 @@ class Map {
   }
 
   display_data(data, region, region_type, climate_scenario) {
-    this.region = region
-    this.region_type = region_type
-    this.climate_scenario = climate_scenario
     const context = this;
 
     const colorScale = d3.scaleLinear()
@@ -104,7 +101,7 @@ class Map {
 
     let dataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
-    if (region_type == 'Continent' || region_type == 'Global') {
+    if ((region_type == 'Continent' || region_type == 'Global') && (region_type != this.region_type || region != this.region)) {
       let zoom_level = this.predefined_zoom_levels[region]
       this.zoom_on_continent(zoom_level['x'], zoom_level['y'], zoom_level['k'])
 
@@ -120,6 +117,10 @@ class Map {
         .duration(1000)
         .attr('transform', this.transform);
     }
+
+    this.region = region
+    this.region_type = region_type
+    this.climate_scenario = climate_scenario
 
     dataPoints
       .enter().append('polygon')
@@ -252,7 +253,7 @@ whenDocumentLoaded(() => {
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
   const reset = d3.select('#reset_button');
-  
+
   const ssp1 = d3.select('#ssp1');
   const ssp2 = d3.select('#ssp2');
   const ssp3 = d3.select('#ssp3');
