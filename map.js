@@ -236,9 +236,10 @@ function get_continent_facts(continent, ssp_type) {
 function draw_charts(ssp_type, region, region_type) {
   if (region_type == 'None' || region_type == 'Global') {
     get_world_facts(ssp_type);
-    draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Share of calorie production (%)")
-    draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation in calorie production (%)")
-    draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)")
+    draw_piechart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Production (%)")
+    draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart12", "Production (%)", 0.55, true)
+    draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation (%)", 1, false)
+    draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)", 1, false)
     document.getElementById("analytics_title").innerHTML = 'World View';
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
@@ -258,7 +259,42 @@ function draw_charts(ssp_type, region, region_type) {
   }
 }
 
-function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
+
+function draw_piechart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
+  let chart = dc.pieChart(chartdiv);
+  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
+    continents.forEach(function(x) {
+      x[yvalues] = +x[yvalues];
+    });
+
+    let ndx = crossfilter(continents),
+      xaxis = ndx.dimension(function(d) {
+        var split = d.continent.split(' ');
+        if (split.length > 1) {
+          return split[0].substring(0,1) + split[1].substring(0,1)
+        }
+        return d.continent.substring(0,3).toUpperCase();
+      }),
+      yaxis = xaxis
+      .group().reduceSum(function(d) {
+        return d[yvalues];
+      });
+    chart
+      .width(window.innerWidth / 6)
+      .height(window.innerHeight / 6)
+      .dimension(xaxis)
+      .group(yaxis)
+      .on('renderlet', function(chart) {
+        chart.selectAll('rect').on("click", function(d) {
+          console.log("click!", d);
+        });
+      });
+    chart.render();
+  });
+}
+
+
+function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, short_labels) {
   let chart = dc.barChart(chartdiv);
   d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
     continents.forEach(function(x) {
@@ -267,6 +303,10 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
 
     let ndx = crossfilter(continents),
       xaxis = ndx.dimension(function(d) {
+        var split = d.continent.split(' ');
+        if (split.length > 1 && short_labels) {
+          return split[0].substring(0,1) + '. ' +split[1].substring(0,1) + '. ';
+        }
         return d.continent;
       }),
       yaxis = xaxis
@@ -274,10 +314,18 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
         return d[yvalues];
       });
     chart
-      .width(window.innerWidth / 3.5)
-      .height(window.innerHeight / 4.5)
+      .width(window.innerWidth / 3.5 * size)
+      .height(window.innerHeight / 5)
       .x(d3.scaleBand())
       .xUnits(dc.units.ordinal)
+      .colors(d3.scaleOrdinal().domain(["positive", "negative"])
+        .range(["green", "red"]))
+      .colorAccessor(function(d) {
+        if (d.value > 0) {
+          return "positive";
+        }
+        return "negative";
+      })
       .brushOn(false)
       .xAxisLabel("Continent")
       .yAxisLabel(ylabel)

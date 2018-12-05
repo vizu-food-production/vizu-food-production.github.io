@@ -44,12 +44,21 @@ body {
 
 	/* default text */
 	font-family: sans-serif;
-	font-size: 1.1rem;
+	font-size: 1.5rem;
 }
 #ssp_slider_container {
 	width: 10%
 	padding-left: 8%;
 	padding-right: 8%;
+}
+
+#chart12 {
+	float: right
+	width: 50%
+}
+#chart1 {
+	float: left;
+	width: 50%
 }
 
 #map {
@@ -67,7 +76,6 @@ body {
 #right_panel .handle{
 	background-color: #2E2E2E;
     left: -30px;
-  padding: 10px;
   position: absolute;
   top: 40%;
   width: 30px;
