@@ -46,6 +46,11 @@ body {
 	font-family: sans-serif;
 	font-size: 1.1rem;
 }
+#ssp_slider_container {
+	width: 10%
+	padding-left: 8%;
+	padding-right: 8%;
+}
 
 #map {
 	float: left;

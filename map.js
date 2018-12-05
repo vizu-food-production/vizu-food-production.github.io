@@ -351,6 +351,14 @@ whenDocumentLoaded(() => {
   const sa = d3.select('#south_america');
   const oc = d3.select('#oceania');
 
+  var ssp_slider = document.getElementById("ssp_range");
+  ssp_slider.oninput = function() {
+    var ssp_nb = this.value;
+    var ssp_type = 'SSP' + ssp_nb;
+    updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '__' + map.region + '.csv', map.region, map.region_type, ssp_type)
+  }
+
+
   let mark_active = function(button) {
     ssp1.style('background-color', 'white')
     ssp2.style('background-color', 'white')
@@ -479,32 +487,13 @@ whenDocumentLoaded(() => {
     }
   })
 
-  let enable_scenario_event = function(map, button, ssp_nb) {
-    button.on('click', function(d, i) {
-      draw_charts(ssp_nb)
-      updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '__' + map.region + '.csv', map.region, map.region_type, 'SSP' + ssp_nb)
-      mark_active(button)
-    })
-  }
 
-  enable_scenario_event(map, ssp1, '1')
-  enable_scenario_event(map, ssp2, '2')
-  enable_scenario_event(map, ssp3, '3')
-  enable_scenario_event(map, ssp4, '4')
-  enable_scenario_event(map, ssp5, '5')
 
   let enable_continent_event = function(map, button, continent) {
     button.on('click', function(d, i) {
       updateData(map, 'data/2050/' + map.climate_scenario + '/' + map.climate_scenario + '__' + continent + '.csv', continent, 'Continent', map.climate_scenario)
     })
   }
-
-  enable_continent_event(map, eu, 'Europe')
-  enable_continent_event(map, af, 'Africa')
-  enable_continent_event(map, as, 'Asia')
-  enable_continent_event(map, na, 'North America')
-  enable_continent_event(map, sa, 'South America')
-  enable_continent_event(map, oc, 'Oceania')
 
   $("#right_panel").click(function() {
     let id = $(this).attr("href").substring(1);
