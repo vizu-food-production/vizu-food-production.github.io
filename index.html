@@ -8,7 +8,7 @@
 
 	<title>Map</title>
 	<meta name="author" content="Frank Schmutz, Kyle Gerard, Romain Caristan">
-
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,14 +28,21 @@
 
 <br>
 <div id="map"></div>
-<div id="charts">
-	<p>Predicted proportion of Calorie production by continent</p>
-	<div id="chart1"></div>
-	<p>Calorie production variation by continent</p>
-  <div id="chart2"></div>
-	<p>Predicted calorie Suffiency by continent</p>
-  <div id="chart3"></div>
-</div>
+<div id="right_panel">
+      <div class="handle">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+      </div>
+      <p>Predicted proportion of Calorie production by continent</p>
+		<div id="chart1"></div>
+		<p>Calorie production variation by continent</p>
+	  <div id="chart2"></div>
+		<p>Predicted calorie Suffiency by continent</p>
+	  <div id="chart3"></div>
+    </div>
+
+<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="lib/jquery.slidereveal.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="lib/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
 <script src="https://unpkg.com/topojson@3"></script>

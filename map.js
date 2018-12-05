@@ -38,13 +38,13 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
 
 class Map {
   constructor() {
-    this.width = window.innerWidth * (2 / 3);
+    this.width = window.innerWidth;
     this.height = window.innerHeight;
     console.log('width: ' + this.width)
     console.log('heigh: ' + this.height)
     this.projection = d3.geoEqualEarth()
       .translate([4 * this.width / 9, this.height / 2])
-      .scale((this.width) / 4);
+      .scale((this.width) / 5);
     this.path = d3.geoPath()
       .projection(this.projection);
     this.svg = d3.select('#map').append('svg')
@@ -70,14 +70,14 @@ class Map {
   }
 
   draw_legend(color_scale) {
-    var xpos = window.innerWidth / 5;
-    var ypos = window.innerHeight * 0.85;
-    var svg = d3.select("svg");
+    let xpos = window.innerWidth / 5;
+    let ypos = window.innerHeight * 0.85;
+    let svg = d3.select("svg");
     svg.append("g")
       .attr("class", "legendLinear")
       .attr("transform", "translate(" + xpos + "," + ypos + ")");
 
-    var legendLinear = d3.legendColor()
+    let legendLinear = d3.legendColor()
       .shapeWidth(window.innerWidth / 37)
       .shapeHeight(window.innerWidth / 50)
       .title("Predicted percent change in calory production between 2000 and 2050 (%)")
@@ -141,6 +141,7 @@ class Map {
                            context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
                            context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
                            context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+      .attr('transform', context.transform)
       .style('fill', d => colorScale(d.percent_change_in_production));
 
     dataPoints
@@ -176,13 +177,13 @@ function draw_charts(ssp_type) {
 }
 
 function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
-  var chart = dc.barChart(chartdiv);
+  let chart = dc.barChart(chartdiv);
   d3.csv("data/graph/graph_continent_data_ssp" + ssp_type + ".csv").then(function(continents) {
     continents.forEach(function(x) {
       x[yvalues] = +x[yvalues];
     });
 
-    var ndx = crossfilter(continents),
+    let ndx = crossfilter(continents),
       xaxis = ndx.dimension(function(d) {
         return d.continent;
       }),
@@ -371,10 +372,10 @@ whenDocumentLoaded(() => {
                (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
                (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region]))
             {
-              updateData(map, "../data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
+              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
             }
             else {
-              updateData(map, "../data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + key + ".csv", key, 'Country', map.climate_scenario)
+              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + key + ".csv", key, 'Country', map.climate_scenario)
             }
           }
           break
@@ -447,5 +448,29 @@ whenDocumentLoaded(() => {
   oc.on("click", function(d, i) {
     updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__Oceania.csv", 'Oceania', 'Continent', map.climate_scenario)
   })
+
+
+
+  $("#right_panel").click(function(){
+    let id = $(this).attr("href").substring(1);
+    $("html, body").animate({ scrollTop: $("#"+id).offset().top }, 1000, function(){
+      $("#right_panel").slideReveal("hide");
+    });
+  });
+
+  let slider = $("#right_panel").slideReveal({
+          // width: 100,
+          push: false,
+          position: "right",
+          // speed: 600,
+          trigger: $(".handle"),
+          // autoEscape: false,
+          shown: function(obj){
+            obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-right"></span>');
+          },
+          hidden: function(obj){
+            obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-left"></span>');
+          }
+        });
 
 });
