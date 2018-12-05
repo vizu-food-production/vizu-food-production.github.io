@@ -57,6 +57,7 @@ class Map {
     this.region = 'World'
     this.region_type = 'Global'
 
+
     this.predefined_zoom_levels = {
       'World': {
         'x': 0,
@@ -198,17 +199,62 @@ class Map {
   }
 }
 
+function get_country_facts(country, ssp_type) {
+  d3.csv("../data/graph/graph_country_data_" + ssp_type.toLowerCase() + ".csv").then(function(countries) {
+    countries.forEach(function(x) {
+      if (x.country == country) {
+        document.getElementById("facts").innerHTML = '<li>Population in year 2000: ' + Math.round(x.Population_2000 / 1000000) + ' million</li><li>Predicted population in 2050: ' + Math.round(x.Population_2050 / 1000000) + ' million</li><li>Variation in calories production between 2000 and 2050: ' + Math.round(x['ΔCalories']) + '%</li><li>Food sufficiency in 2050: ' + Math.round(x.Sufficiency_2050) + '%</li>';
+      }
+    });
+  });
+}
+
+function get_world_facts(ssp_type) {
+  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
+    Population2000 = 0;
+    Population2050 = 0;
+    console.log(continents);
+    continents.forEach(function(x) {
+      Population2000 += +x.Population2000;
+      Population2050 += +x.Population2050;
+    });
+    console.log(Population2000)
+    document.getElementById("facts").innerHTML = '<li>World population in year 2000: ' + Math.round(Population2000 / 1000000) + ' million</li><li>Predicted world population in 2050: ' + Math.round(Population2050 / 1000000) + ' million</li>';
+  });
+}
+
+function get_continent_facts(continent, ssp_type) {
+  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(countries) {
+    countries.forEach(function(x) {
+      if (x.continent == continent) {
+        document.getElementById("facts").innerHTML = '<li>Population in year 2000: ' + Math.round(x.Population2000 / 1000000) + ' million</li><li>Predicted population in 2050: ' + Math.round(x.Population2050 / 1000000) + ' million</li><li>Variation in calories production between 2000 and 2050: ' + Math.round(x['diffCalories']) + '%</li><li>Food sufficiency in 2050: ' + Math.round(x.Sufficiency2050) + '%</li>';
+      }
+    });
+  });
+}
+
 function draw_charts(ssp_type, region, region_type) {
-  document.getElementById("analytics_title").innerHTML = region;
   if (region_type == 'None' || region_type == 'Global') {
-    document.getElementById("chart1").style.display = 'block';
+    get_world_facts(ssp_type);
     draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Share of calorie production (%)")
     draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation in calorie production (%)")
     draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)")
+    document.getElementById("analytics_title").innerHTML = 'World View';
+    document.getElementById("country").style.display = 'none';
+    document.getElementById("continent").style.display = 'none';
+    document.getElementById("world").style.display = 'block';
   } else if (region_type == 'Continent') {
-    document.getElementById("chart1").style.display = 'none';
+    get_continent_facts(region, ssp_type);
+    document.getElementById("analytics_title").innerHTML = 'Continent: ' + region;
+    document.getElementById("world").style.display = 'none';
+    document.getElementById("country").style.display = 'none';
+    document.getElementById("continent").style.display = 'block';
   } else {
-
+    document.getElementById("analytics_title").innerHTML = 'Country: ' + region;
+    get_country_facts(region, ssp_type);
+    document.getElementById("world").style.display = 'none';
+    document.getElementById("continent").style.display = 'none';
+    document.getElementById("country").style.display = 'block';
   }
 }
 
