@@ -348,8 +348,14 @@ function load_country_polygons(countries, countries_to_continent) {
   for (let i = 0; i < filenames.length; i++) {
     d3.json('countries/' + filenames[i])
       .then(data => {
-        countries[data['features'][0]['properties']['name']] = data['features'][0]['geometry']['coordinates']
-        countries_to_continent[data['features'][0]['properties']['name']] = data['features'][0]['properties']['continent']
+        let country = data['features'][0]['properties']['name']
+        if (country == 'South Africa') {
+          countries[country] = [data['features'][0]['geometry']['coordinates'][0]]
+        }
+        else {
+          countries[country] = data['features'][0]['geometry']['coordinates']
+        }
+        countries_to_continent[country] = data['features'][0]['properties']['continent']
       })
   }
 }
@@ -434,6 +440,7 @@ whenDocumentLoaded(() => {
       });
     })
     .then(() => {
+      console.log(countries)
       background.then(world => {
         map.land.append('path')
           .datum(topojson.merge(world, world.objects.countries.geometries))
