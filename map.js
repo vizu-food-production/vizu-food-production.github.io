@@ -132,8 +132,8 @@ class Map {
     const context = this;
 
     const colorScale = d3.scaleLinear()
-      .domain([-100, 100])
-      .range(['red', 'green'])
+      .domain([-100, 0, 100])
+      .range(['red', 'yellow', 'green'])
     colorScale.clamp(true)
 
     this.draw_legend(colorScale)
