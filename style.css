@@ -125,6 +125,10 @@ body {
 	color: #000000;
 }
 
+.label, .legendTitle {
+	fill: white;
+}
+
 /*
 It is easier to read if the text is not too wide, so we limit the width.
 We use the class selector ".", so this style will be applied to elements with class="width-limited"
