@@ -67,6 +67,25 @@ body {
 	height: 100%;
 }
 
+#mouse_region {
+	position: absolute;
+	color: white;
+	pointer-events: none;
+}
+
+.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
+}
+
 #right_panel {
 	width: 33% !important;
 	background-color: rgb(70, 70, 80);

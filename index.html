@@ -14,34 +14,36 @@
 
 <body>
 
-	<br>
 	<div id="map"></div>
-	<div id="right_panel">
-		<div class="handle">
-			<span class="glyphicon glyphicon-chevron-left"></span>
+		<div id="mouse_region" unselectable="on" class="unselectable"></div>
+
+		<div id="right_panel">
+			<div class="handle">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</div>
+			<div id="analytics_container">
+				<button type="button" id="compare_mode">Compare Mode</button>
+				<div id="ssp_slider_container">
+					<h3>Climate Scenario</h3>
+					<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
+				</div>
+				<h1 id="analytics_title">World</h1>
+				<ul id='facts'></ul>
+				<div id="world">
+					<p>Predicted proportion of Calorie production by continent</p>
+					<div id="chart1" display='block'></div>
+					<div id="chart12" display='block'></div>
+					<p>Calorie production variation by continent</p>
+					<div id="chart2"></div>
+					<p>Predicted calorie Suffiency by continent</p>
+					<div id="chart3"></div>
+				</div>
+				<div id="continent">
+				</div>
+				<div id="country">
+				</div>
+			</div>
 		</div>
-		<div id="analytics_container">
-			<div id="ssp_slider_container">
-				<h3>Climate Scenario</h3>
-				<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
-			</div>
-			<h1 id="analytics_title">World</h1>
-			<ul id='facts'></ul>
-			<div id="world">
-				<p>Predicted proportion of Calorie production by continent</p>
-				<div id="chart1" display='block'></div>
-				<div id="chart12" display='block'></div>
-				<p>Calorie production variation by continent</p>
-				<div id="chart2"></div>
-				<p>Predicted calorie Suffiency by continent</p>
-				<div id="chart3"></div>
-			</div>
-			<div id="continent">
-			</div>
-			<div id="country">
-			</div>
-		</div>
-	</div>
 	</div>
 
 	<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
