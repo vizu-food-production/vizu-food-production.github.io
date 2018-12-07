@@ -403,7 +403,7 @@ whenDocumentLoaded(() => {
   ssp_slider.oninput = function() {
     var ssp_nb = this.value;
     var ssp_type = 'SSP' + ssp_nb;
-    updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '__' + map.region + '.csv', map.region, map.region_type, ssp_type)
+    updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
   }
 
 
@@ -418,7 +418,7 @@ whenDocumentLoaded(() => {
 
   let data = [];
 
-  d3.csv("data/2050/SSP1/SSP1__World.csv", function(csv) {
+  d3.csv("data/2050/SSP1/SSP1_World.csv", function(csv) {
       let change_in_prod = parseFloat(csv.percent_change_in_production)
       if (isNaN(change_in_prod)) {
         change_in_prod = Number.MAX_VALUE
@@ -475,7 +475,7 @@ whenDocumentLoaded(() => {
   map.svg.call(zoom);
 
   reset.on("click", function(d, i) {
-    updateData(map, "data/2050/SSP1/SSP1__World.csv", 'World', 'Global', 'SSP1')
+    updateData(map, "data/2050/SSP1/SSP1_World.csv", 'World', 'Global', 'SSP1')
     mark_active(ssp1)
   });
 
@@ -514,9 +514,9 @@ whenDocumentLoaded(() => {
             if (map.region_type == 'None' || map.region_type == 'Global' ||
               (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
               (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region])) {
-              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
+              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
             } else {
-              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + key + ".csv", key, 'Country', map.climate_scenario)
+              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
             }
           }
           break
@@ -526,9 +526,9 @@ whenDocumentLoaded(() => {
 
     if (!region_found) {
       if (map.region_type == 'Country') {
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
+        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
       } else if (map.region_type == 'Continent' || map.region_type == 'None') {
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "__World.csv", 'World', 'Global', map.climate_scenario)
+        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_World.csv", 'World', 'Global', map.climate_scenario)
       }
     } else if (remove_region) {
       map.clear_data()
@@ -539,7 +539,7 @@ whenDocumentLoaded(() => {
 
   let enable_continent_event = function(map, button, continent) {
     button.on('click', function(d, i) {
-      updateData(map, 'data/2050/' + map.climate_scenario + '/' + map.climate_scenario + '__' + continent + '.csv', continent, 'Continent', map.climate_scenario)
+      updateData(map, 'data/2050/' + map.climate_scenario + '/' + map.climate_scenario + '_' + continent + '.csv', continent, 'Continent', map.climate_scenario)
     })
   }
 
