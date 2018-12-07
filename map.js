@@ -107,7 +107,7 @@ class Map {
     let svg = d3.select("svg");
     svg.append("g")
       .attr("class", "legendLinear")
-      .attr("transform", "translate(" + xpos + "," + ypos + ")");
+      .attr("transform", "translate(" + xpos + "," + ypos + ")")
 
     let legendLinear = d3.legendColor()
       .shapeWidth(window.innerWidth / 37)
@@ -598,7 +598,6 @@ whenDocumentLoaded(() => {
   })
 
   map.svg.on("mousemove", function(d, i) {
-    console.log('target: ' + d3.event.target)
     coord = d3.mouse(this)
     coord[0] = (coord[0] - map.transform.x) / map.transform.k
     coord[1] = (coord[1] - map.transform.y) / map.transform.k
