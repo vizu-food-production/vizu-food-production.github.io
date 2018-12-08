@@ -147,6 +147,9 @@ class Map {
     let xpos = window.innerWidth / 5;
     let ypos = window.innerHeight * 0.85;
     let svg = d3.select("svg");
+
+    svg.selectAll(".legendLinear").remove()
+
     svg.append("g")
       .attr("class", "legendLinear")
       .attr("transform", "translate(" + xpos + "," + ypos + ")")
