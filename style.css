@@ -76,6 +76,7 @@ body {
 	color: white;
 	background-color: #2E2E2E;
 	border-style: ridge;
+	opacity: 0;
 	pointer-events: none;
 }
 

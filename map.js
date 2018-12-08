@@ -714,6 +714,7 @@ whenDocumentLoaded(() => {
 
         let keys = Object.keys(countries)
 
+        let box = d3.select('#mouse_region')
         let on_valid_region = false
 
         for (let i = 0; i < keys.length; i++) {
@@ -732,21 +733,17 @@ whenDocumentLoaded(() => {
               if (map.region_type == 'Global' || map.region_type == 'None' ||
                  (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
                  (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
-                d3.select('#mouse_region')
-                  .style('left', (d3.mouse(this)[0] + 20) + 'px')
-                  .style('top', (d3.mouse(this)[1] - 40) + 'px')
+                box
                   .style('opacity', 1)
                   .text(countries_to_continent[key])
               }
               else if (map.region_type == 'Continent' || map.region_type == 'Country') {
-                d3.select('#mouse_region')
-                  .style('left', (d3.mouse(this)[0] + 20) + 'px')
-                  .style('top', (d3.mouse(this)[1] - 40) + 'px')
+                box
                   .style('opacity', 1)
                   .text(key)
               }
               else {
-                d3.select('#mouse_region')
+                box
                   .style('opacity', 0)
               }
               break
@@ -756,22 +753,24 @@ whenDocumentLoaded(() => {
 
         if (!on_valid_region) {
           if (map.region_type == 'Country' && !map.compare_mode) {
-            d3.select('#mouse_region')
-              .style('left', (d3.mouse(this)[0] + 20) + 'px')
-              .style('top', (d3.mouse(this)[1] - 40) + 'px')
+            box
               .style('opacity', 1)
               .text(countries_to_continent[map.region])
           } else if (map.region_type == 'Continent' && !map.compare_mode) {
-            d3.select('#mouse_region')
-              .style('left', (d3.mouse(this)[0] + 20) + 'px')
-              .style('top', (d3.mouse(this)[1] - 40) + 'px')
+            box
               .style('opacity', 1)
               .text('World view')
           } else {
-            d3.select('#mouse_region')
+            box
               .style('opacity', 0)
           }
         }
+
+        let dims = box.node().getBoundingClientRect()
+
+        box
+          .style('left', (d3.min([d3.mouse(this)[0] + 20, window.innerWidth - dims.width - 5])) + 'px')
+          .style('top', (d3.max([d3.mouse(this)[1] - 40, 5])) + 'px')
       })
 
       const analytics_button = d3.select('#analytics_mode')
