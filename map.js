@@ -16,7 +16,7 @@ function whenDocumentLoaded(action) {
 }
 
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
-  let data = [];
+  let data = []
   d3.csv(path_to_data, function(csv) {
       let change_in_prod = parseFloat(csv.percent_change_in_production)
       if (isNaN(change_in_prod)) {
@@ -33,6 +33,44 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
     })
     .then(() => {
       map.display_data(data, region, region_type, climate_scenario)
+    });
+}
+
+function updateBothData(map, path_to_data, path_to_compare_data, region, compare_region, region_type, climate_scenario) {
+  let data = []
+  let compare_data = []
+  d3.csv(path_to_data, function(csv) {
+      let change_in_prod = parseFloat(csv.percent_change_in_production)
+      if (isNaN(change_in_prod)) {
+        change_in_prod = Number.MAX_VALUE
+      }
+      data.push({
+        "min_lon": (+csv.min_lon),
+        "max_lon": (+csv.max_lon),
+        "min_lat": -(+csv.min_lat),
+        "max_lat": -(+csv.max_lat),
+        "ΔCalories": (+csv.ΔCalories),
+        "percent_change_in_production": change_in_prod
+      });
+    })
+    .then(() => {
+      d3.csv(path_to_compare_data, function(csv) {
+          let change_in_prod = parseFloat(csv.percent_change_in_production)
+          if (isNaN(change_in_prod)) {
+            change_in_prod = Number.MAX_VALUE
+          }
+          compare_data.push({
+            "min_lon": (+csv.min_lon),
+            "max_lon": (+csv.max_lon),
+            "min_lat": -(+csv.min_lat),
+            "max_lat": -(+csv.max_lat),
+            "ΔCalories": (+csv.ΔCalories),
+            "percent_change_in_production": change_in_prod
+          });
+        })
+        .then(() => {
+          map.display_both_regions(data, compare_data, region, compare_region, region_type, climate_scenario)
+        });
     });
 }
 
@@ -139,30 +177,33 @@ class Map {
     this.draw_legend(colorScale)
 
     if (this.compare_mode && this.region != 'None') {
-      this.compare_region = region_type
+      if (region != this.region) {
+        this.compare_region = region
+        draw_compare_charts(climate_scenario, this.region, this.compare_region, region_type)
 
-      let mainDataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
-      let compareDataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
+        let mainDataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
+        let compareDataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
-      mainDataPoints
-        .exit()
-        .transition()
-        .duration(1000)
-        .attr('opacity', 0)
-        .remove();
+        mainDataPoints
+          .exit()
+          .transition()
+          .duration(1000)
+          .attr('opacity', 0)
+          .remove();
 
-      compareDataPoints
-        .enter().append('polygon')
-        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-        .style('fill', d => colorScale(d.percent_change_in_production))
-        .attr('transform', context.transform)
-        .attr('opacity', 0)
-        .transition()
-        .duration(1000)
-        .attr('opacity', 1);
+        compareDataPoints
+          .enter().append('polygon')
+          .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
+            context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+            context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+            context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+          .style('fill', d => colorScale(d.percent_change_in_production))
+          .attr('transform', context.transform)
+          .attr('opacity', 0)
+          .transition()
+          .duration(1000)
+          .attr('opacity', 1);
+      }
     }
     else {
       draw_charts(climate_scenario, region, region_type)
@@ -221,6 +262,74 @@ class Map {
     }
   }
 
+  display_both_regions(data, compare_data, region, compare_region, region_type, climate_scenario) {
+    if (this.compare_mode) {
+      this.main_data = data
+      this.compare_data = compare_data
+      this.region = region
+      this.compare_region = compare_region
+      this.region_type = region_type
+      this.climate_scenario = climate_scenario
+
+      const context = this;
+
+      const colorScale = d3.scaleLinear()
+        .domain([-100, 0, 100])
+        .range(['red', 'yellow', 'green'])
+      colorScale.clamp(true)
+
+      this.draw_legend(colorScale)
+
+      draw_compare_charts(climate_scenario, this.region, this.compare_region, region_type)
+
+      let dataPoints = this.circles.selectAll('polygon').data(data.concat(compare_data), d => d.min_lon.toString() + "," + d.min_lat.toString());
+
+      dataPoints
+        .enter().append('polygon')
+        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
+          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+        .style('fill', d => colorScale(d.percent_change_in_production))
+        .attr('transform', context.transform)
+        .attr('opacity', 0)
+        .transition()
+        .duration(1000)
+        .attr('opacity', 1);
+
+      dataPoints
+        .transition()
+        .duration(1000)
+        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
+          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+        .attr('transform', context.transform)
+        .style('fill', d => colorScale(d.percent_change_in_production));
+
+      dataPoints
+        .exit()
+        .transition()
+        .duration(1000)
+        .attr('opacity', 0)
+        .remove();
+    }
+  }
+
+  switch_data() {
+    if (this.compare_mode) {
+      let new_compare_data = this.main_data.slice(0)
+      this.main_data = this.compare_data
+      this.compare_data = new_compare_data
+
+      let new_compare_region = this.region
+      this.region = this.compare_region
+      this.compare_region = new_compare_region
+
+      draw_compare_charts(this.climate_scenario, this.region, this.compare_region, this.region_type)
+    }
+  }
+
   clear_data() {
     if (this.compare_mode) {
       let mainDataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
@@ -234,6 +343,7 @@ class Map {
 
       this.compare_region = 'None'
       this.compare_data = []
+      draw_compare_charts(this.climate_scenario, this.region, 'None', this.region_type)
     }
     else {
       this.region_type = 'None'
@@ -246,6 +356,8 @@ class Map {
         .duration(1000)
         .attr('opacity', 0)
         .remove();
+
+      remove_charts()
     }
   }
 
@@ -260,6 +372,7 @@ function get_country_facts(country, ssp_type) {
   d3.csv("../data/graph/graph_country_data_" + ssp_type.toLowerCase() + ".csv").then(function(countries) {
     countries.forEach(function(x) {
       if (x.country == country) {
+        document.getElementById('facts').style.display = 'block';
         document.getElementById("facts").innerHTML = '<li>Population in year 2000: ' + Math.round(x.Population_2000 / 1000000) + ' million</li><li>Predicted population in 2050: ' + Math.round(x.Population_2050 / 1000000) + ' million</li><li>Variation in calories production between 2000 and 2050: ' + Math.round(x['ΔCalories']) + '%</li><li>Food sufficiency in 2050: ' + Math.round(x.Sufficiency_2050) + '%</li>';
       }
     });
@@ -270,12 +383,11 @@ function get_world_facts(ssp_type) {
   d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
     Population2000 = 0;
     Population2050 = 0;
-    console.log(continents);
     continents.forEach(function(x) {
       Population2000 += +x.Population2000;
       Population2050 += +x.Population2050;
     });
-    console.log(Population2000)
+    document.getElementById('facts').style.display = 'block';
     document.getElementById("facts").innerHTML = '<li>World population in year 2000: ' + Math.round(Population2000 / 1000000) + ' million</li><li>Predicted world population in 2050: ' + Math.round(Population2050 / 1000000) + ' million</li>';
   });
 }
@@ -284,6 +396,7 @@ function get_continent_facts(continent, ssp_type) {
   d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(countries) {
     countries.forEach(function(x) {
       if (x.continent == continent) {
+        document.getElementById('facts').style.display = 'block';
         document.getElementById("facts").innerHTML = '<li>Population in year 2000: ' + Math.round(x.Population2000 / 1000000) + ' million</li><li>Predicted population in 2050: ' + Math.round(x.Population2050 / 1000000) + ' million</li><li>Variation in calories production between 2000 and 2050: ' + Math.round(x['diffCalories']) + '%</li><li>Food sufficiency in 2050: ' + Math.round(x.Sufficiency2050) + '%</li>';
       }
     });
@@ -301,21 +414,49 @@ function draw_charts(ssp_type, region, region_type) {
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
     document.getElementById("world").style.display = 'block';
+    document.getElementById("comparison").style.display = 'none';
   } else if (region_type == 'Continent') {
     get_continent_facts(region, ssp_type);
     document.getElementById("analytics_title").innerHTML = 'Continent: ' + region;
     document.getElementById("world").style.display = 'none';
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'block';
+    document.getElementById("comparison").style.display = 'none';
   } else {
     document.getElementById("analytics_title").innerHTML = 'Country: ' + region;
     get_country_facts(region, ssp_type);
     document.getElementById("world").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
     document.getElementById("country").style.display = 'block';
+    document.getElementById("comparison").style.display = 'none';
   }
 }
 
+function draw_compare_charts(climate_scenario, first_region, second_region, region_type) {
+  if (second_region == 'None') {
+    if (region_type == 'Continent') {
+      document.getElementById("analytics_title").innerHTML = first_region + ' - Select another continent';
+    } else {
+      document.getElementById("analytics_title").innerHTML = first_region + ' - Select another country';
+    }
+  } else {
+    document.getElementById("analytics_title").innerHTML = first_region + ' - ' + second_region;
+  }
+  document.getElementById("comparison").style.display = 'block';
+  document.getElementById("country").style.display = 'none';
+  document.getElementById("continent").style.display = 'none';
+  document.getElementById("world").style.display = 'none';
+  document.getElementById('facts').style.display = 'none';
+}
+
+function remove_charts() {
+  document.getElementById("analytics_title").innerHTML = 'Select a region to view analytics';
+  document.getElementById("comparison").style.display = 'none';
+  document.getElementById("country").style.display = 'none';
+  document.getElementById("continent").style.display = 'none';
+  document.getElementById("world").style.display = 'none';
+  document.getElementById('facts').style.display = 'none';
+}
 
 function draw_piechart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
   let chart = dc.pieChart(chartdiv);
@@ -400,7 +541,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
 }
 
 function load_country_polygons(countries, countries_to_continent) {
-  filenames = ['AFG.geo.json', 'AGO.geo.json', 'ALB.geo.json', 'ARE.geo.json', 'ARG.geo.json', 'ARM.geo.json', 'ATA.geo.json', 'ATF.geo.json', 'AUS.geo.json', 'AUT.geo.json', 'AZE.geo.json', 'BDI.geo.json', 'BEL.geo.json', 'BEN.geo.json', 'BFA.geo.json', 'BGD.geo.json', 'BGR.geo.json', 'BHS.geo.json', 'BIH.geo.json', 'BLR.geo.json', 'BLZ.geo.json', 'BMU.geo.json', 'BOL.geo.json', 'BRA.geo.json', 'BRN.geo.json', 'BTN.geo.json', 'BWA.geo.json', 'CAF.geo.json', 'CAN.geo.json', 'CHE.geo.json', 'CHL.geo.json', 'CHN.geo.json', 'CIV.geo.json', 'CMR.geo.json', 'COD.geo.json', 'COG.geo.json', 'COL.geo.json', 'CRI.geo.json', 'CS-KM.geo.json', 'CUB.geo.json', 'CYP.geo.json', 'CZE.geo.json', 'DEU.geo.json', 'DJI.geo.json', 'DNK.geo.json', 'DOM.geo.json', 'DZA.geo.json', 'ECU.geo.json', 'EGY.geo.json', 'ERI.geo.json', 'ESH.geo.json', 'ESP.geo.json', 'EST.geo.json', 'ETH.geo.json', 'FIN.geo.json', 'FJI.geo.json', 'FLK.geo.json', 'FRA.geo.json', 'GAB.geo.json', 'GBR.geo.json', 'GEO.geo.json', 'GHA.geo.json', 'GIN.geo.json', 'GMB.geo.json', 'GNB.geo.json', 'GNQ.geo.json', 'GRC.geo.json', 'GRL.geo.json', 'GTM.geo.json', 'GUF.geo.json', 'GUY.geo.json', 'HND.geo.json', 'HRV.geo.json', 'HTI.geo.json', 'HUN.geo.json', 'IDN.geo.json', 'IND.geo.json', 'IRL.geo.json', 'IRN.geo.json', 'IRQ.geo.json', 'ISL.geo.json', 'ISR.geo.json', 'ITA.geo.json', 'JAM.geo.json', 'JOR.geo.json', 'JPN.geo.json', 'KAZ.geo.json', 'KEN.geo.json', 'KGZ.geo.json', 'KHM.geo.json', 'KOR.geo.json', 'KWT.geo.json', 'LAO.geo.json', 'LBN.geo.json', 'LBR.geo.json', 'LBY.geo.json', 'LKA.geo.json', 'LSO.geo.json', 'LTU.geo.json', 'LUX.geo.json', 'LVA.geo.json', 'MAR.geo.json', 'MDA.geo.json', 'MDG.geo.json', 'MEX.geo.json', 'MKD.geo.json', 'MLI.geo.json', 'MLT.geo.json', 'MMR.geo.json', 'MNE.geo.json', 'MNG.geo.json', 'MOZ.geo.json', 'MRT.geo.json', 'MWI.geo.json', 'MYS.geo.json', 'NAM.geo.json', 'NCL.geo.json', 'NER.geo.json', 'NGA.geo.json', 'NIC.geo.json', 'NLD.geo.json', 'NOR.geo.json', 'NPL.geo.json', 'NZL.geo.json', 'OMN.geo.json', 'PAK.geo.json', 'PAN.geo.json', 'PER.geo.json', 'PHL.geo.json', 'PNG.geo.json', 'POL.geo.json', 'PRI.geo.json', 'PRK.geo.json', 'PRT.geo.json', 'PRY.geo.json', 'PSE.geo.json', 'QAT.geo.json', 'ROU.geo.json', 'RUS.geo.json', 'RWA.geo.json', 'SAU.geo.json', 'SDN.geo.json', 'SEN.geo.json', 'SLB.geo.json', 'SLE.geo.json', 'SLV.geo.json', 'SOM.geo.json', 'SRB.geo.json', 'SSD.geo.json', 'SUR.geo.json', 'SVK.geo.json', 'SVN.geo.json', 'SWE.geo.json', 'SWZ.geo.json', 'SYR.geo.json', 'TCD.geo.json', 'TGO.geo.json', 'THA.geo.json', 'TJK.geo.json', 'TKM.geo.json', 'TLS.geo.json', 'TTO.geo.json', 'TUN.geo.json', 'TUR.geo.json', 'TWN.geo.json', 'TZA.geo.json', 'UGA.geo.json', 'UKR.geo.json', 'URY.geo.json', 'USA.geo.json', 'UZB.geo.json', 'VEN.geo.json', 'VNM.geo.json', 'VUT.geo.json', 'YEM.geo.json', 'ZAF.geo.json', 'ZMB.geo.json', 'ZWE.geo.json']
+  filenames = ['AFG.geo.json', 'AGO.geo.json', 'ALB.geo.json', 'ARE.geo.json', 'ARG.geo.json', 'ARM.geo.json', 'ATF.geo.json', 'AUS.geo.json', 'AUT.geo.json', 'AZE.geo.json', 'BDI.geo.json', 'BEL.geo.json', 'BEN.geo.json', 'BFA.geo.json', 'BGD.geo.json', 'BGR.geo.json', 'BHS.geo.json', 'BIH.geo.json', 'BLR.geo.json', 'BLZ.geo.json', 'BMU.geo.json', 'BOL.geo.json', 'BRA.geo.json', 'BRN.geo.json', 'BTN.geo.json', 'BWA.geo.json', 'CAF.geo.json', 'CAN.geo.json', 'CHE.geo.json', 'CHL.geo.json', 'CHN.geo.json', 'CIV.geo.json', 'CMR.geo.json', 'COD.geo.json', 'COG.geo.json', 'COL.geo.json', 'CRI.geo.json', 'CS-KM.geo.json', 'CUB.geo.json', 'CYP.geo.json', 'CZE.geo.json', 'DEU.geo.json', 'DJI.geo.json', 'DNK.geo.json', 'DOM.geo.json', 'DZA.geo.json', 'ECU.geo.json', 'EGY.geo.json', 'ERI.geo.json', 'ESH.geo.json', 'ESP.geo.json', 'EST.geo.json', 'ETH.geo.json', 'FIN.geo.json', 'FJI.geo.json', 'FLK.geo.json', 'FRA.geo.json', 'GAB.geo.json', 'GBR.geo.json', 'GEO.geo.json', 'GHA.geo.json', 'GIN.geo.json', 'GMB.geo.json', 'GNB.geo.json', 'GNQ.geo.json', 'GRC.geo.json', 'GRL.geo.json', 'GTM.geo.json', 'GUF.geo.json', 'GUY.geo.json', 'HND.geo.json', 'HRV.geo.json', 'HTI.geo.json', 'HUN.geo.json', 'IDN.geo.json', 'IND.geo.json', 'IRL.geo.json', 'IRN.geo.json', 'IRQ.geo.json', 'ISL.geo.json', 'ISR.geo.json', 'ITA.geo.json', 'JAM.geo.json', 'JOR.geo.json', 'JPN.geo.json', 'KAZ.geo.json', 'KEN.geo.json', 'KGZ.geo.json', 'KHM.geo.json', 'KOR.geo.json', 'KWT.geo.json', 'LAO.geo.json', 'LBN.geo.json', 'LBR.geo.json', 'LBY.geo.json', 'LKA.geo.json', 'LSO.geo.json', 'LTU.geo.json', 'LUX.geo.json', 'LVA.geo.json', 'MAR.geo.json', 'MDA.geo.json', 'MDG.geo.json', 'MEX.geo.json', 'MKD.geo.json', 'MLI.geo.json', 'MLT.geo.json', 'MMR.geo.json', 'MNE.geo.json', 'MNG.geo.json', 'MOZ.geo.json', 'MRT.geo.json', 'MWI.geo.json', 'MYS.geo.json', 'NAM.geo.json', 'NCL.geo.json', 'NER.geo.json', 'NGA.geo.json', 'NIC.geo.json', 'NLD.geo.json', 'NOR.geo.json', 'NPL.geo.json', 'NZL.geo.json', 'OMN.geo.json', 'PAK.geo.json', 'PAN.geo.json', 'PER.geo.json', 'PHL.geo.json', 'PNG.geo.json', 'POL.geo.json', 'PRI.geo.json', 'PRK.geo.json', 'PRT.geo.json', 'PRY.geo.json', 'PSE.geo.json', 'QAT.geo.json', 'ROU.geo.json', 'RUS.geo.json', 'RWA.geo.json', 'SAU.geo.json', 'SDN.geo.json', 'SEN.geo.json', 'SLB.geo.json', 'SLE.geo.json', 'SLV.geo.json', 'SOM.geo.json', 'SRB.geo.json', 'SSD.geo.json', 'SUR.geo.json', 'SVK.geo.json', 'SVN.geo.json', 'SWE.geo.json', 'SWZ.geo.json', 'SYR.geo.json', 'TCD.geo.json', 'TGO.geo.json', 'THA.geo.json', 'TJK.geo.json', 'TKM.geo.json', 'TLS.geo.json', 'TTO.geo.json', 'TUN.geo.json', 'TUR.geo.json', 'TWN.geo.json', 'TZA.geo.json', 'UGA.geo.json', 'UKR.geo.json', 'URY.geo.json', 'USA.geo.json', 'UZB.geo.json', 'VEN.geo.json', 'VNM.geo.json', 'VUT.geo.json', 'YEM.geo.json', 'ZAF.geo.json', 'ZMB.geo.json', 'ZWE.geo.json']
 
   for (let i = 0; i < filenames.length; i++) {
     d3.json('countries/' + filenames[i])
@@ -444,33 +585,20 @@ whenDocumentLoaded(() => {
   let countries_to_continent = {}
   load_country_polygons(countries, countries_to_continent)
 
-  const compare_button = d3.select('#compare_mode');
-
-  compare_button.on('click', function(d, i) {
-    if (map.region_type != 'Global') {
-      if (map.compare_mode) {
-        map.clear_data()
-      }
-      map.compare_mode = !map.compare_mode
-    }
-    if (map.compare_mode) {
-      compare_button.style('background-color', 'rgb(150, 150, 200)')
-    }
-    else {
-      compare_button.style('background-color', 'white')
-    }
-  })
-
   const map = new Map();
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
-  const reset = d3.select('#reset_button');
-
-  var ssp_slider = document.getElementById("ssp_range");
+  let ssp_slider = document.getElementById("ssp_range");
   ssp_slider.oninput = function() {
-    var ssp_nb = this.value;
-    var ssp_type = 'SSP' + ssp_nb;
-    updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
+    let ssp_nb = this.value;
+    let ssp_type = 'SSP' + ssp_nb;
+    if (!map.compare_mode) {
+      updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
+    } else {
+      updateBothData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv',
+                     'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.compare_region + '.csv',
+                     map.region, map.compare_region, map.region_type, ssp_type)
+    }
   }
 
   let data = [];
@@ -506,6 +634,181 @@ whenDocumentLoaded(() => {
       map.display_data(data, 'World', 'Global', 'SSP1')
 
       draw_charts(map.climate_scenario, map.region, map.region_type)
+
+      map.svg.on("click", function(d, i) {
+        let remove_region = true
+        let region_found = false
+
+        coord = d3.mouse(this)
+        coord[0] = (coord[0] - map.transform.x) / map.transform.k
+        coord[1] = (coord[1] - map.transform.y) / map.transform.k
+        coord = map.projection.invert(coord)
+
+        let keys = Object.keys(countries)
+
+        for (let i = 0; i < keys.length; i++) {
+          let key = keys[i]
+
+          let country_polygons = countries[key]
+          for (let j = 0; j < country_polygons.length; j++) {
+            let polygon = []
+            if (country_polygons.length > 1) {
+              polygon = country_polygons[j][0]
+            } else {
+              polygon = country_polygons[j]
+            }
+            if (inside(coord, polygon)) {
+              region_found = true
+              if (key != map.region) {
+                remove_region = false
+              }
+
+              if (region_found && !remove_region) {
+                if (map.compare_mode) {
+                  if (map.region_type == 'Continent') {
+                    if (countries_to_continent[key] != map.compare_region) {
+                      updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
+                    } else {
+                      map.clear_data()
+                    }
+                  } else {
+                    if (key != map.compare_region) {
+                      updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
+                    } else {
+                      map.clear_data()
+                    }
+                  }
+                }
+                else {
+                  // We show the continent either if we currently have a global view or a view on another continent
+                  if (map.region_type == 'None' || map.region_type == 'Global' ||
+                    (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
+                    (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region])) {
+                    updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
+                  } else {
+                    updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
+                  }
+                }
+              }
+              break
+            }
+          }
+        }
+
+        if (!region_found && !map.compare_mode) {
+          if (map.region_type == 'Country') {
+            updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
+          } else if (map.region_type == 'Continent' || map.region_type == 'None') {
+            updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_World.csv", 'World', 'Global', map.climate_scenario)
+          }
+        } else if (remove_region) {
+          map.clear_data()
+        }
+      })
+
+      map.svg.on("mousemove", function(d, i) {
+        coord = d3.mouse(this)
+        coord[0] = (coord[0] - map.transform.x) / map.transform.k
+        coord[1] = (coord[1] - map.transform.y) / map.transform.k
+        coord = map.projection.invert(coord)
+
+        let keys = Object.keys(countries)
+
+        let on_valid_region = false
+
+        for (let i = 0; i < keys.length; i++) {
+          let key = keys[i]
+
+          let country_polygons = countries[key]
+          for (let j = 0; j < country_polygons.length; j++) {
+            let polygon = []
+            if (country_polygons.length > 1) {
+              polygon = country_polygons[j][0]
+            } else {
+              polygon = country_polygons[j]
+            }
+            if (inside(coord, polygon)) {
+              on_valid_region = true
+              if (map.region_type == 'Global' || map.region_type == 'None' ||
+                 (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
+                 (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
+                d3.select('#mouse_region')
+                  .style('left', (d3.mouse(this)[0] + 5) + 'px')
+                  .style('top', (d3.mouse(this)[1] - 25) + 'px')
+                  .style('opacity', 1)
+                  .text(countries_to_continent[key])
+              }
+              else if (map.region_type == 'Continent' || map.region_type == 'Country') {
+                d3.select('#mouse_region')
+                  .style('left', (d3.mouse(this)[0] + 5) + 'px')
+                  .style('top', (d3.mouse(this)[1] - 25) + 'px')
+                  .style('opacity', 1)
+                  .text(key)
+              }
+              else {
+                d3.select('#mouse_region')
+                  .style('opacity', 0)
+              }
+              break
+            }
+          }
+        }
+
+        if (!on_valid_region) {
+          if (map.region_type == 'Country' && !map.compare_mode) {
+            d3.select('#mouse_region')
+              .style('left', (d3.mouse(this)[0] + 5) + 'px')
+              .style('top', (d3.mouse(this)[1] - 25) + 'px')
+              .style('opacity', 1)
+              .text(countries_to_continent[map.region])
+          } else if (map.region_type == 'Continent' && !map.compare_mode) {
+            d3.select('#mouse_region')
+              .style('left', (d3.mouse(this)[0] + 5) + 'px')
+              .style('top', (d3.mouse(this)[1] - 25) + 'px')
+              .style('opacity', 1)
+              .text('World view')
+          } else {
+            d3.select('#mouse_region')
+              .style('opacity', 0)
+          }
+        }
+      })
+
+      const analytics_button = d3.select('#analytics_mode')
+      const compare_button = d3.select('#compare_mode')
+      compare_button.style('color', 'white')
+
+      analytics_button.on('click', function(d, i) {
+        if (map.compare_mode) {
+          map.clear_data()
+          map.compare_mode = false
+          compare_button.style('background-color', '#2E2E2E')
+          compare_button.style('color', 'white')
+          analytics_button.style('background-color', 'white')
+          analytics_button.style('color', '#2E2E2E')
+          draw_charts(map.climate_scenario, map.region, map.region_type)
+        }
+      })
+
+      compare_button.on('click', function(d, i) {
+        if (!map.compare_mode && map.region_type != 'Global' && map.region_type != 'None') {
+          map.compare_mode = true
+          compare_button.style('background-color', 'white')
+          compare_button.style('color', '#2E2E2E')
+          analytics_button.style('background-color', '#2E2E2E')
+          analytics_button.style('color', 'white')
+          draw_compare_charts(map.climate_scenario, map.region, map.compare_region, map.region_type)
+        }
+      })
+
+      const swap_regions_button = d3.select('#swap_regions')
+      swap_regions_button.style('color', 'white')
+
+      swap_regions_button.on('click', function(d, i) {
+        if (map.compare_mode && map.compare_region != 'None') {
+          map.switch_data()
+        }
+      })
     });
 
   function zoomed() {
@@ -529,127 +832,6 @@ whenDocumentLoaded(() => {
     .on('zoom', zoomed);
 
   map.svg.call(zoom);
-
-  reset.on("click", function(d, i) {
-    updateData(map, "data/2050/SSP1/SSP1_World.csv", 'World', 'Global', 'SSP1')
-  });
-
-  map.svg.on("click", function(d, i) {
-    let remove_region = true
-    let region_found = false
-
-    coord = d3.mouse(this)
-    coord[0] = (coord[0] - map.transform.x) / map.transform.k
-    coord[1] = (coord[1] - map.transform.y) / map.transform.k
-    coord = map.projection.invert(coord)
-
-    let keys = Object.keys(countries)
-
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i]
-
-      let country_polygons = countries[key]
-      for (let j = 0; j < country_polygons.length; j++) {
-        let polygon = []
-        if (country_polygons.length > 1) {
-          polygon = country_polygons[j][0]
-        } else {
-          polygon = country_polygons[j]
-        }
-        if (inside(coord, polygon)) {
-          region_found = true
-          if (key != map.region) {
-            remove_region = false
-          }
-
-          if (region_found && !remove_region) {
-            if (map.compare_mode) {
-              if (map.region_type == 'Continent') {
-                updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
-              } else {
-                updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
-              }
-            }
-            else {
-              // We show the continent either if we currently have a global view or a view on another continent
-              if (map.region_type == 'None' || map.region_type == 'Global' ||
-                (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
-                (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region])) {
-                updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
-              } else {
-                updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
-              }
-            }
-          }
-          break
-        }
-      }
-    }
-
-    if (!region_found && !map.compare_mode) {
-      if (map.region_type == 'Country') {
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
-      } else if (map.region_type == 'Continent' || map.region_type == 'None') {
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_World.csv", 'World', 'Global', map.climate_scenario)
-      }
-    } else if (remove_region) {
-      map.clear_data()
-    }
-  })
-
-  map.svg.on("mousemove", function(d, i) {
-    coord = d3.mouse(this)
-    coord[0] = (coord[0] - map.transform.x) / map.transform.k
-    coord[1] = (coord[1] - map.transform.y) / map.transform.k
-    coord = map.projection.invert(coord)
-
-    let keys = Object.keys(countries)
-
-    let on_valid_region = false
-
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i]
-
-      let country_polygons = countries[key]
-      for (let j = 0; j < country_polygons.length; j++) {
-        let polygon = []
-        if (country_polygons.length > 1) {
-          polygon = country_polygons[j][0]
-        } else {
-          polygon = country_polygons[j]
-        }
-        if (inside(coord, polygon)) {
-          on_valid_region = true
-          if (map.region_type == 'Global' ||
-             (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
-             (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
-            d3.select('#mouse_region')
-              .style('left', (d3.mouse(this)[0] + 5) + 'px')
-              .style('top', (d3.mouse(this)[1] - 25) + 'px')
-              .style('opacity', 1)
-              .text(countries_to_continent[key])
-          }
-          else if (map.region_type == 'Continent' || map.region_type == 'Country') {
-            d3.select('#mouse_region')
-              .style('left', (d3.mouse(this)[0] + 5) + 'px')
-              .style('top', (d3.mouse(this)[1] - 25) + 'px')
-              .style('opacity', 1)
-              .text(key)
-          }
-          else {
-            d3.select('#mouse_region')
-              .style('opacity', 0)
-          }
-          break
-        }
-      }
-    }
-
-    if (!on_valid_region) {
-      d3.select('#mouse_region')
-        .style('opacity', 0)
-    }
-  })
 
   $("#right_panel").click(function() {
     let id = $(this).attr("href").substring(1);

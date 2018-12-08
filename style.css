@@ -105,6 +105,26 @@ body {
 	padding-left: 3%;
 }
 
+#analytics_mode, #compare_mode {
+	width: 48%;
+}
+
+#analytics_mode {
+	background-color: white;
+	color: #2E2E2E;
+}
+
+#compare_mode {
+	background-color: #2E2E2E;
+	color: white;
+}
+
+#swap_regions {
+	width: 96%;
+	background-color: #2E2E2E;
+	color: white;
+}
+
 .sphere {
   fill: rgb(40, 40, 40);
 }
