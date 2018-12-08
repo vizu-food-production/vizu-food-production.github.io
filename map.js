@@ -54,23 +54,27 @@ function updateBothData(map, path_to_data, path_to_compare_data, region, compare
       });
     })
     .then(() => {
-      d3.csv(path_to_compare_data, function(csv) {
-          let change_in_prod = parseFloat(csv.percent_change_in_production)
-          if (isNaN(change_in_prod)) {
-            change_in_prod = Number.MAX_VALUE
-          }
-          compare_data.push({
-            "min_lon": (+csv.min_lon),
-            "max_lon": (+csv.max_lon),
-            "min_lat": -(+csv.min_lat),
-            "max_lat": -(+csv.max_lat),
-            "ΔCalories": (+csv.ΔCalories),
-            "percent_change_in_production": change_in_prod
+      if (compare_region != 'None') {
+        d3.csv(path_to_compare_data, function(csv) {
+            let change_in_prod = parseFloat(csv.percent_change_in_production)
+            if (isNaN(change_in_prod)) {
+              change_in_prod = Number.MAX_VALUE
+            }
+            compare_data.push({
+              "min_lon": (+csv.min_lon),
+              "max_lon": (+csv.max_lon),
+              "min_lat": -(+csv.min_lat),
+              "max_lat": -(+csv.max_lat),
+              "ΔCalories": (+csv.ΔCalories),
+              "percent_change_in_production": change_in_prod
+            });
+          })
+          .then(() => {
+            map.display_both_regions(data, compare_data, region, compare_region, region_type, climate_scenario)
           });
-        })
-        .then(() => {
-          map.display_both_regions(data, compare_data, region, compare_region, region_type, climate_scenario)
-        });
+      } else {
+        map.display_both_regions(data, [], region, compare_region, region_type, climate_scenario)
+      }
     });
 }
 
