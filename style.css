@@ -69,7 +69,13 @@ body {
 
 #mouse_region {
 	position: absolute;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	color: white;
+	background-color: #2E2E2E;
+	border-style: ridge;
 	pointer-events: none;
 }
 

@@ -733,15 +733,15 @@ whenDocumentLoaded(() => {
                  (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
                  (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
                 d3.select('#mouse_region')
-                  .style('left', (d3.mouse(this)[0] + 5) + 'px')
-                  .style('top', (d3.mouse(this)[1] - 25) + 'px')
+                  .style('left', (d3.mouse(this)[0] + 20) + 'px')
+                  .style('top', (d3.mouse(this)[1] - 40) + 'px')
                   .style('opacity', 1)
                   .text(countries_to_continent[key])
               }
               else if (map.region_type == 'Continent' || map.region_type == 'Country') {
                 d3.select('#mouse_region')
-                  .style('left', (d3.mouse(this)[0] + 5) + 'px')
-                  .style('top', (d3.mouse(this)[1] - 25) + 'px')
+                  .style('left', (d3.mouse(this)[0] + 20) + 'px')
+                  .style('top', (d3.mouse(this)[1] - 40) + 'px')
                   .style('opacity', 1)
                   .text(key)
               }
@@ -757,14 +757,14 @@ whenDocumentLoaded(() => {
         if (!on_valid_region) {
           if (map.region_type == 'Country' && !map.compare_mode) {
             d3.select('#mouse_region')
-              .style('left', (d3.mouse(this)[0] + 5) + 'px')
-              .style('top', (d3.mouse(this)[1] - 25) + 'px')
+              .style('left', (d3.mouse(this)[0] + 20) + 'px')
+              .style('top', (d3.mouse(this)[1] - 40) + 'px')
               .style('opacity', 1)
               .text(countries_to_continent[map.region])
           } else if (map.region_type == 'Continent' && !map.compare_mode) {
             d3.select('#mouse_region')
-              .style('left', (d3.mouse(this)[0] + 5) + 'px')
-              .style('top', (d3.mouse(this)[1] - 25) + 'px')
+              .style('left', (d3.mouse(this)[0] + 20) + 'px')
+              .style('top', (d3.mouse(this)[1] - 40) + 'px')
               .style('opacity', 1)
               .text('World view')
           } else {
