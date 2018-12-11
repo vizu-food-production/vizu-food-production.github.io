@@ -82,7 +82,7 @@ class Map {
   constructor() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    this.projection = d3.geoEqualEarth()
+    this.projection = d3.geoWinkel3()
       .translate([4 * this.width / 9, this.height / 2])
       .scale((this.width) / 5);
     this.path = d3.geoPath()
