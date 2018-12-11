@@ -29,9 +29,7 @@ html, body, figure {
 
 /* Default font and size */
 body {
-	position: fixed;
 	width: 100%;
-	height: 100%;
 
 	/* center vertically */
 	display: block;
@@ -46,6 +44,12 @@ body {
 	font-family: sans-serif;
 	font-size: 1.5rem;
 }
+
+#image {
+	width: 100%;
+	display: block;
+}
+
 #ssp_slider_container {
 	width: 10%
 	padding-left: 8%;
