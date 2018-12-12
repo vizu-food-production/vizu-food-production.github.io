@@ -16,13 +16,56 @@
 	<meta name="author" content="Frank Schmutz, Kyle Gerard, Romain Caristan">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="style.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/ScrollMagic.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/plugins/animation.gsap.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/plugins/debug.addIndicators.js"></script>
 </head>
+<div id="image">
+	<img src="header_img.jpg" height="100%" width="100%">
+</div>
 
 <body>
 
-	<div id="image">
-		<img src="header_img.jpg" height="100%" width="100%">
+	<div id="right_panel">
+		<section id="story1" class="panel blue">
+			<div id="analytics_container">
+				<button type="button" id="analytics_mode">Analytics</button>
+				<button type="button" id="compare_mode">Compare</button>
+				<div id="ssp_slider_container">
+					<h3>Climate Scenario</h3>
+					<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
+				</div>
+				<h1 id="analytics_title">World</h1>
+				<ul id='facts'></ul>
+				<div id="world">
+					<p>Predicted proportion of Calorie production by continent</p>
+					<div id="chart1" display='block'></div>
+					<div id="chart12" display='block'></div>
+					<p>Calorie production variation by continent</p>
+					<div id="chart2"></div>
+					<p>Predicted calorie Suffiency by continent</p>
+					<div id="chart3"></div>
+				</div>
+				<div id="continent">
+				</div>
+				<div id="country">
+				</div>
+				<div id="comparison" display='none'>
+					<button type="button" id="swap_regions">Swap regions</div>
+			</div>
+		</section>
+		<section id="story2" class="panel turqoise">
+			<b>AFRICA</b>
+		</section>
+		<section id="story3" class="panel green">
+			<b>NIGERIA</b>
+		</section>
+		<section class="panel bordeaux">
+			<b>FOUR</b>
+		</section>
 	</div>
+
 
 	<div id="map">
 		<svg>
@@ -38,36 +81,6 @@
 	</div>
 	<div id="mouse_region" unselectable="on" class="unselectable"></div>
 
-	<div id="right_panel">
-		<div class="handle">
-			<span class="glyphicon glyphicon-chevron-left"></span>
-		</div>
-		<div id="analytics_container">
-			<button type="button" id="analytics_mode">Analytics</button>
-			<button type="button" id="compare_mode">Compare</button>
-			<div id="ssp_slider_container">
-				<h3>Climate Scenario</h3>
-				<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
-			</div>
-			<h1 id="analytics_title">World</h1>
-			<ul id='facts'></ul>
-			<div id="world">
-				<p>Predicted proportion of Calorie production by continent</p>
-				<div id="chart1" display='block'></div>
-				<div id="chart12" display='block'></div>
-				<p>Calorie production variation by continent</p>
-				<div id="chart2"></div>
-				<p>Predicted calorie Suffiency by continent</p>
-				<div id="chart3"></div>
-			</div>
-			<div id="continent">
-			</div>
-			<div id="country">
-			</div>
-			<div id="comparison" display='none'>
-				<button type="button" id="swap_regions">Swap regions</div>
-		</div>
-	</div>
 	</div>
 	</div>
 

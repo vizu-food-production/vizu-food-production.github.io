@@ -67,7 +67,7 @@ body {
 
 #map {
 	float: left;
-	width: 100%;
+	width: 66%;
 	height: 100%;
 }
 
@@ -101,11 +101,18 @@ body {
 	width: 33% !important;
 	background-color: rgb(70, 70, 80);
 	color: #fff;
+	float: right;
+	height: 10000px
+}
+
+.panel {
+	height: 10%;
+	width: 100%;
 }
 
 #right_panel .handle{
 	background-color: #2E2E2E;
-    left: -30px;
+  left: -30px;
   position: absolute;
   top: 40%;
   width: 30px;
@@ -170,4 +177,35 @@ The various units of measurement available in CSS:
 
 svg {
 	margin-bottom: 1rem;
+}
+
+.blue {
+	background-color: #3883d8;
+}
+.turqoise {
+	background-color: #38ced7;
+}
+.brown {
+	background-color: #a66f28;
+}
+.bordeaux {
+	background-color: #953543;
+}
+.skin {
+	background-color: #ED9F4C;
+}
+.black {
+	background-color: #000000;
+}
+.white {
+	background-color: #FFFFFF;
+}
+.red {
+	background-color: #cf3535;
+}
+.green {
+	background-color: #22d659;
+}
+.orange {
+	background-color: #ea6300;
 }

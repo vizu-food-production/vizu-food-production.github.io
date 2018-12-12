@@ -15,6 +15,91 @@ function whenDocumentLoaded(action) {
   }
 }
 
+var controller = new ScrollMagic.Controller({
+  globalSceneOptions: {
+    triggerHook: 'onLeave'
+  }
+});
+
+
+
+
+
+
+
+
+function add_strories(map) {
+  // get all slides
+  var slides = document.querySelectorAll("section.panel");
+
+  var story = document.getElementById("story1");
+  console.log(story)
+  new ScrollMagic.Scene({
+      triggerElement: story
+    })
+    .setPin(story)
+    .addIndicators() // add indicators (requires plugin)
+    .addTo(controller)
+    .on("enter leave", function(e) {
+      let image_size = document.getElementById("image").style.height;
+      console.log(image_size);
+      let map_div = document.getElementById("map");
+      if (e.type == "enter") {
+        console.log('now');
+        map_div.style.top = "0px";
+        map_div.style.position = "fixed";
+
+      } else {
+        map_div.style.position = "relative";
+      }
+    });
+
+  story = document.getElementById("story2");
+  new ScrollMagic.Scene({
+      triggerElement: story
+    })
+    .setPin(story)
+    .addIndicators() // add indicators (requires plugin)
+    .addTo(controller)
+    .on("enter leave", function(e) {
+      if (e.type == "enter") {
+        continent = "Africa"
+        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + continent +".csv", continent, 'Continent', map.climate_scenario)
+
+      } else {
+        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + "World" + ".csv", "World", "World", map.climate_scenario)
+      }
+    });
+
+    story = document.getElementById("story3");
+    new ScrollMagic.Scene({
+        triggerElement: story
+      })
+      .setPin(story)
+      .addIndicators() // add indicators (requires plugin)
+      .addTo(controller)
+      .on("enter leave", function(e) {
+        if (e.type == "enter") {
+          updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + "Nigeria" + ".csv", "Nigeria", "Country", map.climate_scenario)
+
+        } else {
+          updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + continent +".csv", continent, 'Continent', map.climate_scenario)
+        }
+      });
+
+    var slides = document.querySelectorAll("section.panel");
+    // create scene for every slide
+    for (var i = 0; i < slides.length; i++) {
+      new ScrollMagic.Scene({
+          triggerElement: slides[i]
+        })
+        .setPin(slides[i])
+        .addIndicators() // add indicators (requires plugin)
+        .addTo(controller);
+    }
+}
+
+
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
   let data = []
   d3.csv(path_to_data, function(csv) {
@@ -80,7 +165,7 @@ function updateBothData(map, path_to_data, path_to_compare_data, region, compare
 
 class Map {
   constructor() {
-    this.width = window.innerWidth *0.98;
+    this.width = window.innerWidth * 0.66;
     this.height = window.innerHeight;
     this.projection = d3.geoWinkel3()
       .translate([4 * this.width / 9, this.height / 2])
@@ -169,8 +254,7 @@ class Map {
   display_data(data, region, region_type, climate_scenario) {
     if (this.compare_mode) {
       this.compare_data = data
-    }
-    else {
+    } else {
       this.main_data = data
     }
 
@@ -211,8 +295,7 @@ class Map {
           .duration(1000)
           .attr('opacity', 1);
       }
-    }
-    else {
+    } else {
       draw_charts(climate_scenario, region, region_type)
       let dataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
@@ -351,8 +434,7 @@ class Map {
       this.compare_region = 'None'
       this.compare_data = []
       draw_compare_charts(this.climate_scenario, this.region, 'None', this.region_type)
-    }
-    else {
+    } else {
       this.region_type = 'None'
       this.region = 'None'
       this.main_data = []
@@ -476,9 +558,9 @@ function draw_piechart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
       xaxis = ndx.dimension(function(d) {
         var split = d.continent.split(' ');
         if (split.length > 1) {
-          return split[0].substring(0,1) + split[1].substring(0,1)
+          return split[0].substring(0, 1) + split[1].substring(0, 1)
         }
-        return d.continent.substring(0,3).toUpperCase();
+        return d.continent.substring(0, 3).toUpperCase();
       }),
       yaxis = xaxis
       .group().reduceSum(function(d) {
@@ -510,7 +592,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
       xaxis = ndx.dimension(function(d) {
         var split = d.continent.split(' ');
         if (split.length > 1 && short_labels) {
-          return split[0].substring(0,1) + '. ' +split[1].substring(0,1) + '. ';
+          return split[0].substring(0, 1) + '. ' + split[1].substring(0, 1) + '. ';
         }
         return d.continent;
       }),
@@ -556,8 +638,7 @@ function load_country_polygons(countries, countries_to_continent) {
         let country = data['features'][0]['properties']['name']
         if (country == 'South Africa') {
           countries[country] = [data['features'][0]['geometry']['coordinates'][0]]
-        }
-        else {
+        } else {
           countries[country] = data['features'][0]['geometry']['coordinates']
         }
         countries_to_continent[country] = data['features'][0]['properties']['continent']
@@ -593,6 +674,8 @@ whenDocumentLoaded(() => {
   load_country_polygons(countries, countries_to_continent)
 
   const map = new Map();
+
+  add_strories(map);
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
   let ssp_slider = document.getElementById("ssp_range");
@@ -603,8 +686,8 @@ whenDocumentLoaded(() => {
       updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
     } else {
       updateBothData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv',
-                     'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.compare_region + '.csv',
-                     map.region, map.compare_region, map.region_type, ssp_type)
+        'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.compare_region + '.csv',
+        map.region, map.compare_region, map.region_type, ssp_type)
     }
   }
 
@@ -645,7 +728,7 @@ whenDocumentLoaded(() => {
       map.svg.on("click", function(d, i) {
         let targetId = d3.event.target.id
         if (targetId != 'zoom_rect' && targetId != 'unzoom_rect' &&
-            targetId != 'zoom_text' && targetId != 'unzoom_text') {
+          targetId != 'zoom_text' && targetId != 'unzoom_text') {
 
           let remove_region = true
           let region_found = false
@@ -689,8 +772,7 @@ whenDocumentLoaded(() => {
                         map.clear_data()
                       }
                     }
-                  }
-                  else {
+                  } else {
                     // We show the continent either if we currently have a global view or a view on another continent
                     if (map.region_type == 'None' || map.region_type == 'Global' ||
                       (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
@@ -718,14 +800,14 @@ whenDocumentLoaded(() => {
         }
       })
 
-      d3.select('body').on('mouseover', function(d,i) {
+      d3.select('body').on('mouseover', function(d, i) {
         d3.select('#mouse_region').style('opacity', 0)
       })
 
       map.svg.on("mousemove", function(d, i) {
         let targetId = d3.event.target.id
         if (targetId != 'zoom_rect' && targetId != 'unzoom_rect' &&
-            targetId != 'zoom_text' && targetId != 'unzoom_text') {
+          targetId != 'zoom_text' && targetId != 'unzoom_text') {
 
           coord = d3.mouse(this)
           coord[0] = (coord[0] - map.transform.x) / map.transform.k
@@ -751,18 +833,16 @@ whenDocumentLoaded(() => {
               if (inside(coord, polygon)) {
                 on_valid_region = true
                 if (map.region_type == 'Global' || map.region_type == 'None' ||
-                   (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
-                   (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
+                  (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
+                  (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
                   box
                     .style('opacity', 1)
                     .text(countries_to_continent[key])
-                }
-                else if (map.region_type == 'Continent' || map.region_type == 'Country') {
+                } else if (map.region_type == 'Continent' || map.region_type == 'Country') {
                   box
                     .style('opacity', 1)
                     .text(key)
-                }
-                else {
+                } else {
                   box
                     .style('opacity', 0)
                 }
@@ -791,8 +871,7 @@ whenDocumentLoaded(() => {
           box
             .style('left', (d3.min([d3.mouse(this)[0] + 20, window.innerWidth - dims.width - 5])) + 'px')
             .style('top', (d3.max([d3.event.pageY - 40, 5 + d3.event.pageY])) + 'px')
-        }
-        else {
+        } else {
           d3.select('#mouse_region').style('opacity', 0)
         }
       })
@@ -860,34 +939,10 @@ whenDocumentLoaded(() => {
 
   map.svg.select('#zoom_buttons').on('zoom', null)
 
-  $("#right_panel").click(function() {
-    let id = $(this).attr("href").substring(1);
-    $("html, body").animate({
-      scrollTop: $("#" + id).offset().top
-    }, 1000, function() {
-      $("#right_panel").slideReveal("hide");
-    });
-  });
-
-  let slider = $("#right_panel").slideReveal({
-    // width: 100,
-    push: false,
-    position: "right",
-    // speed: 600,
-    trigger: $(".handle"),
-    // autoEscape: false,
-    shown: function(obj) {
-      obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-right"></span>');
-    },
-    hidden: function(obj) {
-      obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-left"></span>');
-    }
-  });
-
   function zoomClick(is_zoom) {
     let zoom_factor = 2
     if (!is_zoom) {
-      zoom_factor = 1/zoom_factor
+      zoom_factor = 1 / zoom_factor
     }
 
     let current_transform = map.transform
@@ -897,8 +952,8 @@ whenDocumentLoaded(() => {
     let current_y = current_transform.y
 
     let coord = []
-    coord[0] = (map.width/2 - map.transform.x) / map.transform.k
-    coord[1] = (map.height/2 - map.transform.y) / map.transform.k
+    coord[0] = (map.width / 2 - map.transform.x) / map.transform.k
+    coord[1] = (map.height / 2 - map.transform.y) / map.transform.k
     coord = map.projection.invert(coord)
 
     current_transform.k = current_scale * zoom_factor
@@ -928,9 +983,17 @@ whenDocumentLoaded(() => {
     map.transform = current_transform
   }
 
-  d3.select('#zoom_rect').on('click', function(d, i) {zoomClick(true)});
-  d3.select('#unzoom_rect').on('click', function(d, i) {zoomClick(false)});
-  d3.select('#zoom_text').on('click', function(d, i) {zoomClick(true)});
-  d3.select('#unzoom_text').on('click', function(d, i) {zoomClick(false)});
+  d3.select('#zoom_rect').on('click', function(d, i) {
+    zoomClick(true)
+  });
+  d3.select('#unzoom_rect').on('click', function(d, i) {
+    zoomClick(false)
+  });
+  d3.select('#zoom_text').on('click', function(d, i) {
+    zoomClick(true)
+  });
+  d3.select('#unzoom_text').on('click', function(d, i) {
+    zoomClick(false)
+  });
 
 });
