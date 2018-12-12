@@ -881,4 +881,38 @@ whenDocumentLoaded(() => {
     }
   });
 
+  function zoomClick(is_zoom) {
+    let zoom_factor = 2
+    if (!is_zoom) {
+      zoom_factor = 1/zoom_factor
+    }
+
+    let current_transform = map.transform
+
+    let current_scale = current_transform.k
+    let current_x = current_transform.x
+    let current_y = current_transform.y
+
+    current_transform.k = current_scale * zoom_factor
+
+    map.land
+      .selectAll('path') // To prevent stroke width from scaling
+      .attr('transform', current_transform);
+
+    map.boundaries
+      .selectAll('path') // To prevent stroke width from scaling
+      .attr('transform', current_transform);
+
+    map.circles
+      .selectAll('polygon') // To prevent stroke width from scaling
+      .attr('transform', current_transform);
+
+    map.transform = current_transform
+  }
+
+  d3.select('#zoom_rect').on('click', function(d, i) {zoomClick(true)});
+  d3.select('#unzoom_rect').on('click', function(d, i) {zoomClick(false)});
+  d3.select('#zoom_text').on('click', function(d, i) {zoomClick(true)});
+  d3.select('#unzoom_text').on('click', function(d, i) {zoomClick(false)});
+
 });
