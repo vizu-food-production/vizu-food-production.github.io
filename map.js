@@ -80,7 +80,7 @@ function updateBothData(map, path_to_data, path_to_compare_data, region, compare
 
 class Map {
   constructor() {
-    this.width = window.innerWidth;
+    this.width = window.innerWidth *0.98;
     this.height = window.innerHeight;
     this.projection = d3.geoWinkel3()
       .translate([4 * this.width / 9, this.height / 2])
@@ -855,7 +855,10 @@ whenDocumentLoaded(() => {
     .on('zoom', zoomed);
 
   map.svg.call(zoom)
-    .on('wheel.zoom', null);
+    .on('wheel.zoom', null)
+    .on('dbclick', null)
+
+  map.svg.select('#zoom_buttons').on('zoom', null)
 
   $("#right_panel").click(function() {
     let id = $(this).attr("href").substring(1);
@@ -906,14 +909,20 @@ whenDocumentLoaded(() => {
 
     map.land
       .selectAll('path') // To prevent stroke width from scaling
+      .transition()
+      .duration(1000)
       .attr('transform', current_transform);
 
     map.boundaries
       .selectAll('path') // To prevent stroke width from scaling
+      .transition()
+      .duration(1000)
       .attr('transform', current_transform);
 
     map.circles
       .selectAll('polygon') // To prevent stroke width from scaling
+      .transition()
+      .duration(1000)
       .attr('transform', current_transform);
 
     map.transform = current_transform
