@@ -5,8 +5,14 @@
 	<meta charset="utf-8">
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<title>Map</title>
+	<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="theme-color" content="#ffffff">
+	<title>Food Production Predictions</title>
 	<meta name="author" content="Frank Schmutz, Kyle Gerard, Romain Caristan">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="style.css">
@@ -19,39 +25,39 @@
 	</div>
 
 	<div id="map"></div>
-		<div id="mouse_region" unselectable="on" class="unselectable"></div>
+	<div id="mouse_region" unselectable="on" class="unselectable"></div>
 
-		<div id="right_panel">
-			<div class="handle">
-				<span class="glyphicon glyphicon-chevron-left"></span>
-			</div>
-			<div id="analytics_container">
-				<button type="button" id="analytics_mode">Analytics</button>
-				<button type="button" id="compare_mode">Compare</button>
-				<div id="ssp_slider_container">
-					<h3>Climate Scenario</h3>
-					<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
-				</div>
-				<h1 id="analytics_title">World</h1>
-				<ul id='facts'></ul>
-				<div id="world">
-					<p>Predicted proportion of Calorie production by continent</p>
-					<div id="chart1" display='block'></div>
-					<div id="chart12" display='block'></div>
-					<p>Calorie production variation by continent</p>
-					<div id="chart2"></div>
-					<p>Predicted calorie Suffiency by continent</p>
-					<div id="chart3"></div>
-				</div>
-				<div id="continent">
-				</div>
-				<div id="country">
-				</div>
-				<div id="comparison" display='none'>
-					<button type="button" id="swap_regions">Swap regions</div>
-				</div>
-			</div>
+	<div id="right_panel">
+		<div class="handle">
+			<span class="glyphicon glyphicon-chevron-left"></span>
 		</div>
+		<div id="analytics_container">
+			<button type="button" id="analytics_mode">Analytics</button>
+			<button type="button" id="compare_mode">Compare</button>
+			<div id="ssp_slider_container">
+				<h3>Climate Scenario</h3>
+				<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
+			</div>
+			<h1 id="analytics_title">World</h1>
+			<ul id='facts'></ul>
+			<div id="world">
+				<p>Predicted proportion of Calorie production by continent</p>
+				<div id="chart1" display='block'></div>
+				<div id="chart12" display='block'></div>
+				<p>Calorie production variation by continent</p>
+				<div id="chart2"></div>
+				<p>Predicted calorie Suffiency by continent</p>
+				<div id="chart3"></div>
+			</div>
+			<div id="continent">
+			</div>
+			<div id="country">
+			</div>
+			<div id="comparison" display='none'>
+				<button type="button" id="swap_regions">Swap regions</div>
+		</div>
+	</div>
+	</div>
 	</div>
 
 	<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
