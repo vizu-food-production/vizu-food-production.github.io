@@ -168,7 +168,7 @@ class Map {
     this.width = window.innerWidth * 0.66;
     this.height = window.innerHeight;
     this.projection = d3.geoWinkel3()
-      .translate([4 * this.width / 9, this.height / 2])
+      .translate([4 * this.width / 9, this.height / 1.8])
       .scale((this.width) / 5);
     this.path = d3.geoPath()
       .projection(this.projection);
@@ -940,47 +940,48 @@ whenDocumentLoaded(() => {
   map.svg.select('#zoom_buttons').on('zoom', null)
 
   function zoomClick(is_zoom) {
-    let zoom_factor = 2
-    if (!is_zoom) {
-      zoom_factor = 1 / zoom_factor
-    }
-
     let current_transform = map.transform
+    if ((current_transform.k >= 1 && !is_zoom) || (current_transform.k <= 50 && is_zoom)) {
+      let zoom_factor = 2
+      if (!is_zoom) {
+        zoom_factor = 1 / zoom_factor
+      }
 
-    let current_scale = current_transform.k
-    let current_x = current_transform.x
-    let current_y = current_transform.y
+      let current_scale = current_transform.k
+      let current_x = current_transform.x
+      let current_y = current_transform.y
 
-    let coord = []
-    coord[0] = (map.width / 2 - map.transform.x) / map.transform.k
-    coord[1] = (map.height / 2 - map.transform.y) / map.transform.k
-    coord = map.projection.invert(coord)
+      let coord = []
+      coord[0] = (map.width / 2 - map.transform.x) / map.transform.k
+      coord[1] = (map.height / 2 - map.transform.y) / map.transform.k
+      coord = map.projection.invert(coord)
 
-    current_transform.k = current_scale * zoom_factor
-    current_transform.x = -current_transform.k * map.projection([coord[0], coord[1]])[0] + map.width / 2
-    current_transform.y = -current_transform.k * map.projection([coord[0], coord[1]])[1] + map.height / 2
+      current_transform.k = current_scale * zoom_factor
+      current_transform.x = -current_transform.k * map.projection([coord[0], coord[1]])[0] + map.width / 2
+      current_transform.y = -current_transform.k * map.projection([coord[0], coord[1]])[1] + map.height / 2
 
-    console.log(current_transform)
+      console.log(current_transform)
 
-    map.land
-      .selectAll('path') // To prevent stroke width from scaling
-      .transition()
-      .duration(1000)
-      .attr('transform', current_transform);
+      map.land
+        .selectAll('path') // To prevent stroke width from scaling
+        .transition()
+        .duration(1000)
+        .attr('transform', current_transform);
 
-    map.boundaries
-      .selectAll('path') // To prevent stroke width from scaling
-      .transition()
-      .duration(1000)
-      .attr('transform', current_transform);
+      map.boundaries
+        .selectAll('path') // To prevent stroke width from scaling
+        .transition()
+        .duration(1000)
+        .attr('transform', current_transform);
 
-    map.circles
-      .selectAll('polygon') // To prevent stroke width from scaling
-      .transition()
-      .duration(1000)
-      .attr('transform', current_transform);
+      map.circles
+        .selectAll('polygon') // To prevent stroke width from scaling
+        .transition()
+        .duration(1000)
+        .attr('transform', current_transform);
 
-    map.transform = current_transform
+      map.transform = current_transform
+    }
   }
 
   d3.select('#zoom_rect').on('click', function(d, i) {
