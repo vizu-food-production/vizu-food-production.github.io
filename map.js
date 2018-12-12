@@ -777,7 +777,7 @@ whenDocumentLoaded(() => {
 
         box
           .style('left', (d3.min([d3.mouse(this)[0] + 20, window.innerWidth - dims.width - 5])) + 'px')
-          .style('top', (d3.max([d3.mouse(this)[1] + d3.event.pageY - 40, 5 + d3.event.pageY])) + 'px')
+          .style('top', (d3.max([d3.event.pageY - 40, 5 + d3.event.pageY])) + 'px')
       })
 
       const analytics_button = d3.select('#analytics_mode')
