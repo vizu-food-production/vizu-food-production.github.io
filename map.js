@@ -893,7 +893,16 @@ whenDocumentLoaded(() => {
     let current_x = current_transform.x
     let current_y = current_transform.y
 
+    let coord = []
+    coord[0] = (map.width/2 - map.transform.x) / map.transform.k
+    coord[1] = (map.height/2 - map.transform.y) / map.transform.k
+    coord = map.projection.invert(coord)
+
     current_transform.k = current_scale * zoom_factor
+    current_transform.x = -current_transform.k * map.projection([coord[0], coord[1]])[0] + map.width / 2
+    current_transform.y = -current_transform.k * map.projection([coord[0], coord[1]])[1] + map.height / 2
+
+    console.log(current_transform)
 
     map.land
       .selectAll('path') // To prevent stroke width from scaling
