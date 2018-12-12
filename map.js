@@ -643,141 +643,158 @@ whenDocumentLoaded(() => {
       draw_charts(map.climate_scenario, map.region, map.region_type)
 
       map.svg.on("click", function(d, i) {
-        let remove_region = true
-        let region_found = false
+        let targetId = d3.event.target.id
+        if (targetId != 'zoom_rect' && targetId != 'unzoom_rect' &&
+            targetId != 'zoom_text' && targetId != 'unzoom_text') {
 
-        coord = d3.mouse(this)
-        coord[0] = (coord[0] - map.transform.x) / map.transform.k
-        coord[1] = (coord[1] - map.transform.y) / map.transform.k
-        coord = map.projection.invert(coord)
+          let remove_region = true
+          let region_found = false
 
-        let keys = Object.keys(countries)
+          coord = d3.mouse(this)
+          coord[0] = (coord[0] - map.transform.x) / map.transform.k
+          coord[1] = (coord[1] - map.transform.y) / map.transform.k
+          coord = map.projection.invert(coord)
 
-        for (let i = 0; i < keys.length; i++) {
-          let key = keys[i]
+          let keys = Object.keys(countries)
 
-          let country_polygons = countries[key]
-          for (let j = 0; j < country_polygons.length; j++) {
-            let polygon = []
-            if (country_polygons.length > 1) {
-              polygon = country_polygons[j][0]
-            } else {
-              polygon = country_polygons[j]
-            }
-            if (inside(coord, polygon)) {
-              region_found = true
-              if (key != map.region) {
-                remove_region = false
+          for (let i = 0; i < keys.length; i++) {
+            let key = keys[i]
+
+            let country_polygons = countries[key]
+            for (let j = 0; j < country_polygons.length; j++) {
+              let polygon = []
+              if (country_polygons.length > 1) {
+                polygon = country_polygons[j][0]
+              } else {
+                polygon = country_polygons[j]
               }
+              if (inside(coord, polygon)) {
+                region_found = true
+                if (key != map.region) {
+                  remove_region = false
+                }
 
-              if (region_found && !remove_region) {
-                if (map.compare_mode) {
-                  if (map.region_type == 'Continent') {
-                    if (countries_to_continent[key] != map.compare_region) {
+                if (region_found && !remove_region) {
+                  if (map.compare_mode) {
+                    if (map.region_type == 'Continent') {
+                      if (countries_to_continent[key] != map.compare_region) {
+                        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
+                      } else {
+                        map.clear_data()
+                      }
+                    } else {
+                      if (key != map.compare_region) {
+                        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
+                      } else {
+                        map.clear_data()
+                      }
+                    }
+                  }
+                  else {
+                    // We show the continent either if we currently have a global view or a view on another continent
+                    if (map.region_type == 'None' || map.region_type == 'Global' ||
+                      (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
+                      (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region])) {
                       updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
                     } else {
-                      map.clear_data()
-                    }
-                  } else {
-                    if (key != map.compare_region) {
                       updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
-                    } else {
-                      map.clear_data()
                     }
                   }
                 }
-                else {
-                  // We show the continent either if we currently have a global view or a view on another continent
-                  if (map.region_type == 'None' || map.region_type == 'Global' ||
-                    (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
-                    (map.region_type == 'Country' && countries_to_continent[key] != countries_to_continent[map.region])) {
-                    updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
-                  } else {
-                    updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
-                  }
-                }
+                break
               }
-              break
             }
           }
-        }
 
-        if (!region_found && !map.compare_mode) {
-          if (map.region_type == 'Country') {
-            updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
-          } else if (map.region_type == 'Continent' || map.region_type == 'None') {
-            updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_World.csv", 'World', 'Global', map.climate_scenario)
+          if (!region_found && !map.compare_mode) {
+            if (map.region_type == 'Country') {
+              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
+            } else if (map.region_type == 'Continent' || map.region_type == 'None') {
+              updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_World.csv", 'World', 'Global', map.climate_scenario)
+            }
+          } else if (remove_region) {
+            map.clear_data()
           }
-        } else if (remove_region) {
-          map.clear_data()
         }
       })
 
+      d3.select('body').on('mouseover', function(d,i) {
+        d3.select('#mouse_region').style('opacity', 0)
+      })
+
       map.svg.on("mousemove", function(d, i) {
-        coord = d3.mouse(this)
-        coord[0] = (coord[0] - map.transform.x) / map.transform.k
-        coord[1] = (coord[1] - map.transform.y) / map.transform.k
-        coord = map.projection.invert(coord)
+        let targetId = d3.event.target.id
+        if (targetId != 'zoom_rect' && targetId != 'unzoom_rect' &&
+            targetId != 'zoom_text' && targetId != 'unzoom_text') {
 
-        let keys = Object.keys(countries)
+          coord = d3.mouse(this)
+          coord[0] = (coord[0] - map.transform.x) / map.transform.k
+          coord[1] = (coord[1] - map.transform.y) / map.transform.k
+          coord = map.projection.invert(coord)
 
-        let box = d3.select('#mouse_region')
-        let on_valid_region = false
+          let keys = Object.keys(countries)
 
-        for (let i = 0; i < keys.length; i++) {
-          let key = keys[i]
+          let box = d3.select('#mouse_region')
+          let on_valid_region = false
 
-          let country_polygons = countries[key]
-          for (let j = 0; j < country_polygons.length; j++) {
-            let polygon = []
-            if (country_polygons.length > 1) {
-              polygon = country_polygons[j][0]
+          for (let i = 0; i < keys.length; i++) {
+            let key = keys[i]
+
+            let country_polygons = countries[key]
+            for (let j = 0; j < country_polygons.length; j++) {
+              let polygon = []
+              if (country_polygons.length > 1) {
+                polygon = country_polygons[j][0]
+              } else {
+                polygon = country_polygons[j]
+              }
+              if (inside(coord, polygon)) {
+                on_valid_region = true
+                if (map.region_type == 'Global' || map.region_type == 'None' ||
+                   (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
+                   (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
+                  box
+                    .style('opacity', 1)
+                    .text(countries_to_continent[key])
+                }
+                else if (map.region_type == 'Continent' || map.region_type == 'Country') {
+                  box
+                    .style('opacity', 1)
+                    .text(key)
+                }
+                else {
+                  box
+                    .style('opacity', 0)
+                }
+                break
+              }
+            }
+          }
+
+          if (!on_valid_region) {
+            if (map.region_type == 'Country' && !map.compare_mode) {
+              box
+                .style('opacity', 1)
+                .text(countries_to_continent[map.region])
+            } else if (map.region_type == 'Continent' && !map.compare_mode) {
+              box
+                .style('opacity', 1)
+                .text('World view')
             } else {
-              polygon = country_polygons[j]
-            }
-            if (inside(coord, polygon)) {
-              on_valid_region = true
-              if (map.region_type == 'Global' || map.region_type == 'None' ||
-                 (map.region_type == 'Continent' && (map.region != countries_to_continent[key] || map.compare_mode)) ||
-                 (map.region_type == 'Country' && !map.compare_mode && countries_to_continent[map.region] != countries_to_continent[key])) {
-                box
-                  .style('opacity', 1)
-                  .text(countries_to_continent[key])
-              }
-              else if (map.region_type == 'Continent' || map.region_type == 'Country') {
-                box
-                  .style('opacity', 1)
-                  .text(key)
-              }
-              else {
-                box
-                  .style('opacity', 0)
-              }
-              break
+              box
+                .style('opacity', 0)
             }
           }
+
+          let dims = box.node().getBoundingClientRect()
+
+          box
+            .style('left', (d3.min([d3.mouse(this)[0] + 20, window.innerWidth - dims.width - 5])) + 'px')
+            .style('top', (d3.max([d3.event.pageY - 40, 5 + d3.event.pageY])) + 'px')
         }
-
-        if (!on_valid_region) {
-          if (map.region_type == 'Country' && !map.compare_mode) {
-            box
-              .style('opacity', 1)
-              .text(countries_to_continent[map.region])
-          } else if (map.region_type == 'Continent' && !map.compare_mode) {
-            box
-              .style('opacity', 1)
-              .text('World view')
-          } else {
-            box
-              .style('opacity', 0)
-          }
+        else {
+          d3.select('#mouse_region').style('opacity', 0)
         }
-
-        let dims = box.node().getBoundingClientRect()
-
-        box
-          .style('left', (d3.min([d3.mouse(this)[0] + 20, window.innerWidth - dims.width - 5])) + 'px')
-          .style('top', (d3.max([d3.event.pageY - 40, 5 + d3.event.pageY])) + 'px')
       })
 
       const analytics_button = d3.select('#analytics_mode')
