@@ -87,12 +87,12 @@ class Map {
       .scale((this.width) / 5);
     this.path = d3.geoPath()
       .projection(this.projection);
-    this.svg = d3.select('#map').append('svg')
+    this.svg = d3.select('#map').select('svg')
       .attr('width', this.width)
       .attr('height', this.height);
-    this.land = this.svg.append('g');
-    this.circles = this.svg.append('g');
-    this.boundaries = this.svg.append('g');
+    this.land = this.svg.select('#container').append('g');
+    this.circles = this.svg.select('#container').append('g');
+    this.boundaries = this.svg.select('#container').append('g');
     this.transform = d3.zoomIdentity
     this.climate_scenario = 'SSP1'
     this.region = 'World'
