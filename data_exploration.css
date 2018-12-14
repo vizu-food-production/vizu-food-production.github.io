@@ -128,8 +128,9 @@ body {
 }
 
 #map {
+	background: rgb(20, 20, 20);
 	float: left;
-	width: 66%;
+	width: 67%;
 	height: 100%;
 }
 
