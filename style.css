@@ -102,12 +102,20 @@ body {
 	background-color: rgb(70, 70, 80);
 	color: #fff;
 	float: right;
-	height: 10000px
+	height: 100%
 }
 
-.panel {
-	height: 10%;
+.spacer {
+	height: 100%;
 	width: 100%;
+}
+
+#story2 {
+	height: 50%;
+}
+
+#story2 {
+	height: 70%;
 }
 
 #right_panel .handle{

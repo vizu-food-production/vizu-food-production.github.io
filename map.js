@@ -1,12 +1,4 @@
-/*
-	Run the action when we are sure the DOM has been loaded
-	https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded
-	Example:
-	whenDocumentLoaded(() => {
-		console.log('loaded!');
-		document.getElementById('some-element');
-	});
-	*/
+
 function whenDocumentLoaded(action) {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", action);
@@ -29,15 +21,11 @@ var controller = new ScrollMagic.Controller({
 
 
 function add_strories(map) {
-  // get all slides
-  var slides = document.querySelectorAll("section.panel");
 
   var story = document.getElementById("story1");
-  console.log(story)
   new ScrollMagic.Scene({
       triggerElement: story
     })
-    .setPin(story)
     .addIndicators() // add indicators (requires plugin)
     .addTo(controller)
     .on("enter leave", function(e) {
@@ -58,14 +46,12 @@ function add_strories(map) {
   new ScrollMagic.Scene({
       triggerElement: story
     })
-    .setPin(story)
     .addIndicators() // add indicators (requires plugin)
     .addTo(controller)
     .on("enter leave", function(e) {
       if (e.type == "enter") {
         continent = "Africa"
         updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + continent +".csv", continent, 'Continent', map.climate_scenario)
-
       } else {
         updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + "World" + ".csv", "World", "World", map.climate_scenario)
       }
@@ -75,7 +61,6 @@ function add_strories(map) {
     new ScrollMagic.Scene({
         triggerElement: story
       })
-      .setPin(story)
       .addIndicators() // add indicators (requires plugin)
       .addTo(controller)
       .on("enter leave", function(e) {
@@ -87,13 +72,12 @@ function add_strories(map) {
         }
       });
 
-    var slides = document.querySelectorAll("section.panel");
+    var slides = document.querySelectorAll(".spacer");
     // create scene for every slide
     for (var i = 0; i < slides.length; i++) {
       new ScrollMagic.Scene({
           triggerElement: slides[i]
         })
-        .setPin(slides[i])
         .addIndicators() // add indicators (requires plugin)
         .addTo(controller);
     }
