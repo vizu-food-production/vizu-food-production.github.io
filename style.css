@@ -30,7 +30,7 @@ html, body, figure {
 /* Default font and size */
 body {
 	width: 100%;
-
+	position: fixed;
 	/* center vertically */
 	display: block;
 	flex-flow: row nowrap;
@@ -43,6 +43,11 @@ body {
 	/* default text */
 	font-family: sans-serif;
 	font-size: 1.5rem;
+	text-align: justify;
+    font-family: "Open Sans",sans-serif;
+    color: #333;
+    position: relative;
+    line-height: 1.6;
 }
 
 #header {
@@ -59,13 +64,13 @@ body {
 	text-align: center;
 	padding: 12px;
 	text-decoration: none;
-	font-size: 18px; 
+	font-size: 20px; 
 	line-height: 25px;
 	border-radius: 4px;
 	margin: 0 0 0px;
 }
 
-#header .to_map:hover {
+#header .to_explo:hover {
   background-color: rgb(70, 70, 70);
   color: rgb(250, 250, 250);
   text-decoration: none;
@@ -77,8 +82,30 @@ body {
 }
 
 
+
 #map {
 	margin-top: 50px;
+	float: left;
+	width: 100%;
+	height: 100%;
+}
+
+#ssp_slider_container {
+	width: 10%
+	padding-left: 8%;
+	padding-right: 8%;
+}
+
+#chart12 {
+	float: right
+	width: 50%
+}
+#chart1 {
+	float: left;
+	width: 50%
+}
+
+#map {
 	float: left;
 	width: 100%;
 	height: 100%;
@@ -111,8 +138,8 @@ body {
 }
 
 #right_panel {
-	margin-top: 50px;
 	width: 33% !important;
+	margin-top: 50px;
 	background-color: rgb(70, 70, 80);
 	color: #fff;
 }
@@ -177,7 +204,6 @@ body {
 /*
 It is easier to read if the text is not too wide, so we limit the width.
 We use the class selector ".", so this style will be applied to elements with class="width-limited"
-
 The various units of measurement available in CSS:
 	https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Values_and_units
 */

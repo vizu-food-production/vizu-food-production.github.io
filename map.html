@@ -20,48 +20,47 @@
 
 <body>
 	<div id="header">
-  		<a href="index.html">Food Production 2050</a>
-  		<div class="header-right">
-    		<a href="index.html" class="to_map">Exploration</a>
-  		</div>
+		<a href="index.html">Food Production 2050</a>
+		<div class="header-right">
+			<a href="index.html" class="to_explo">Exploration</a>
+		</div>
 	</div>
-	<div id="map_container">
-		<div id="map"></div>
-	</div>
-	<div id="mouse_region" unselectable="on" class="unselectable"></div>
 
-	<div id="right_panel">
-		<div class="handle">
-			<span class="glyphicon glyphicon-chevron-left"></span>
+	<div id="map"></div>
+		<div id="mouse_region" unselectable="on" class="unselectable"></div>
+
+		<div id="right_panel">
+			<div class="handle">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+			</div>
+			<div id="analytics_container">
+				<button type="button" id="analytics_mode">Analytics</button>
+				<button type="button" id="compare_mode">Compare</button>
+				<div id="ssp_slider_container">
+					<h3>Climate Scenario</h3>
+					<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
+				</div>
+				<h1 id="analytics_title">World</h1>
+				<ul id='facts'></ul>
+				<div id="world">
+					<p>Predicted proportion of Calorie production by continent</p>
+					<div id="chart1" display='block'></div>
+					<div id="chart12" display='block'></div>
+					<p>Calorie production variation by continent</p>
+					<div id="chart2"></div>
+					<p>Predicted calorie Suffiency by continent</p>
+					<div id="chart3"></div>
+				</div>
+				<div id="continent">
+				</div>
+				<div id="country">
+				</div>
+				<div id="comparison" display='none'>
+					<button type="button" id="swap_regions">Swap regions</div>
+				</div>
+			</div>
 		</div>
-		<div id="analytics_container">
-			<button type="button" id="analytics_mode">Analytics</button>
-			<button type="button" id="compare_mode">Compare</button>
-			<div id="ssp_slider_container">
-				<h3>Climate Scenario</h3>
-				<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
-			</div>
-			<h1 id="analytics_title">World</h1>
-			<ul id='facts'></ul>
-			<div id="world">
-				<p>Predicted proportion of Calorie production by continent</p>
-				<div id="chart1" display='block'></div>
-				<div id="chart12" display='block'></div>
-				<p>Calorie production variation by continent</p>
-				<div id="chart2"></div>
-				<p>Predicted calorie Suffiency by continent</p>
-				<div id="chart3"></div>
-			</div>
-			<div id="continent">
-			</div>
-			<div id="country">
-			</div>
-			<div id="comparison" display='none'>
-				<button type="button" id="swap_regions">Swap regions</div>
-		</div>
-	</div>
-	</div>
-	</div>
+	</div>>
 
 	<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="lib/jquery.slidereveal.min.js"></script>
@@ -70,7 +69,7 @@
 	<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
 	<script src="https://unpkg.com/topojson@3"></script>
-	<script src="map.js"></script>
+	<script src="interactive_map.js"></script>
 	<script src="lib/crossfilter.js"></script>
 	<script src="lib/dc.js"></script>
 </body>
