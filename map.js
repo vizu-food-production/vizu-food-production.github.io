@@ -18,8 +18,6 @@ var controller = new ScrollMagic.Controller({
 
 
 
-
-
 function add_strories(map) {
 
   var story = document.getElementById("story1");
@@ -29,11 +27,9 @@ function add_strories(map) {
     .addIndicators() // add indicators (requires plugin)
     .addTo(controller)
     .on("enter leave", function(e) {
-      let image_size = document.getElementById("image").style.height;
-      console.log(image_size);
       let map_div = document.getElementById("map");
       if (e.type == "enter") {
-        console.log('now');
+
         map_div.style.top = "0px";
         map_div.style.position = "fixed";
 
@@ -490,13 +486,13 @@ function draw_charts(ssp_type, region, region_type) {
     document.getElementById("comparison").style.display = 'none';
   } else if (region_type == 'Continent') {
     get_continent_facts(region, ssp_type);
-    document.getElementById("analytics_title").innerHTML = 'Continent: ' + region;
+    document.getElementById("analytics_title").innerHTML = 'Region: ' + region;
     document.getElementById("world").style.display = 'none';
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'block';
     document.getElementById("comparison").style.display = 'none';
   } else {
-    document.getElementById("analytics_title").innerHTML = 'Country: ' + region;
+    document.getElementById("analytics_title").innerHTML = 'Region: ' + region;
     get_country_facts(region, ssp_type);
     document.getElementById("world").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
