@@ -30,7 +30,7 @@ function add_strories(map) {
       let map_div = document.getElementById("map");
       if (e.type == "enter") {
 
-        map_div.style.top = "0px";
+        map_div.style.top = "50px";
         map_div.style.position = "fixed";
 
       } else {
