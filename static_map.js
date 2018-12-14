@@ -29,12 +29,10 @@ function add_strories(map) {
     .on("enter leave", function(e) {
       let map_div = document.getElementById("map");
       if (e.type == "enter") {
-
-        map_div.style.top = "50px";
+        map_div.style.top = "0px";
         map_div.style.position = "fixed";
 
       } else {
-        map_div.style.top = "0px";
         map_div.style.position = "relative";
       }
     });
