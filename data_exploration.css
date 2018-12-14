@@ -1,0 +1,272 @@
+
+/*
+This CSS governs the appearance of our site.
+You can find the basic concepts of CSS here: https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/How_CSS_works
+*/
+
+/*
+This makes the border and padding be counted as part of the element's size.
+https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Box_model
+It switches from
+	https://mdn.mozillademos.org/files/13647/box-model-standard-small.png
+to
+	https://mdn.mozillademos.org/files/13649/box-model-alt-small.png
+*/
+* {
+	box-sizing: border-box;
+}
+
+/*
+Make the document fill the whole viewport, this overrides any weird defaults that browsers might have.
+*/
+html, body, figure {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+/* Default font and size */
+body {
+	width: 100%;
+
+	/* center vertically */
+	display: block;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-content: center;
+
+	/* background color */
+	background: rgb(250, 250, 250);
+
+	/* default text */
+	font-family: sans-serif;
+	font-size: 1.5rem;
+	text-align: justify;
+    font-family: "Open Sans",sans-serif;
+    color: #333;
+    position: relative;
+    line-height: 1.6;
+}
+
+
+
+/* Data Exploration*/
+
+#header {
+	position: fixed;
+	width: 100%;
+    background-color: rgb(40, 40, 40);
+    color: rgb(250, 250, 250);
+    height: 50px;
+}
+
+#header a {
+	float: left;
+	color: rgb(250, 250, 250);
+	text-align: center;
+	padding: 12px;
+	text-decoration: none;
+	font-size: 20px; 
+	line-height: 25px;
+	border-radius: 4px;
+	margin: 0 0 0px;
+}
+
+#header .to_map:hover {
+  background-color: rgb(70, 70, 70);
+  color: rgb(250, 250, 250);
+  text-decoration: none;
+}
+
+
+#header .header-right {
+  float: right;
+}
+
+
+#intro .image {
+	display: block;
+	margin-left: auto;
+  	margin-right: auto;
+}
+
+
+.text {
+	font-size: 20px;
+	padding-top: 20px;
+    padding-bottom: 20px; 
+    padding-left: 150px;
+    padding-right: 150px;
+}
+
+
+
+#scenario_choice {
+	padding-bottom: 10px;
+    text-align: center;
+    background-color: #f7f6f1;
+    border-bottom: 1px solid #d6d8d8;
+    border-top: 1px solid #d6d8d8;
+}
+
+
+#ssp_slider_container {
+	width: 10%
+	padding-left: 8%;
+	padding-right: 8%;
+}
+
+#chart12 {
+	float: right
+	width: 50%
+}
+#chart1 {
+	float: left;
+	width: 50%
+}
+
+#map {
+	float: left;
+	width: 66%;
+	height: 100%;
+}
+
+#mouse_region {
+	position: absolute;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	color: white;
+	background-color: #2E2E2E;
+	border-style: ridge;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
+}
+
+#right_panel {
+	width: 33% !important;
+	background-color: rgb(70, 70, 80);
+	color: #fff;
+	float: right;
+	height: 100%
+}
+
+.spacer {
+	height: 100%;
+	width: 100%;
+}
+
+#story2 {
+	height: 50%;
+}
+
+
+
+#right_panel .handle{
+	background-color: #2E2E2E;
+  left: -30px;
+  position: absolute;
+  top: 40%;
+  width: 30px;
+  cursor: pointer;
+}
+
+#analytics_container {
+	padding-left: 3%;
+}
+
+#analytics_mode, #compare_mode {
+	width: 48%;
+}
+
+#analytics_mode {
+	background-color: white;
+	color: #2E2E2E;
+}
+
+#compare_mode {
+	background-color: #2E2E2E;
+	color: white;
+}
+
+#swap_regions {
+	width: 96%;
+	background-color: #2E2E2E;
+	color: white;
+}
+
+.sphere {
+  fill: rgb(40, 40, 40);
+}
+
+.land {
+  fill: rgb(60, 60, 60);
+}
+
+.boundary {
+  fill: none;
+  stroke: #76b6c4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+#analytics_container button {
+	color: #000000;
+}
+
+.label, .legendTitle {
+	fill: white;
+}
+
+
+svg {
+	margin-bottom: 1rem;
+}
+
+.blue {
+	background-color: #3883d8;
+}
+.turqoise {
+	background-color: #38ced7;
+}
+.brown {
+	background-color: #a66f28;
+}
+.bordeaux {
+	background-color: #953543;
+}
+.skin {
+	background-color: #ED9F4C;
+}
+.black {
+	background-color: #000000;
+}
+.white {
+	background-color: #FFFFFF;
+}
+.red {
+	background-color: #cf3535;
+}
+.green {
+	background-color: #22d659;
+}
+.orange {
+	background-color: #ea6300;
+}
