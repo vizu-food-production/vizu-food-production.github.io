@@ -55,7 +55,6 @@ body {
 /* Data Exploration*/
 
 #header {
-	position: fixed;
 	width: 100%;
     background-color: rgb(40, 40, 40);
     color: rgb(250, 250, 250);
