@@ -34,6 +34,7 @@ function add_strories(map) {
         map_div.style.position = "fixed";
 
       } else {
+        map_div.style.top = "0px";
         map_div.style.position = "relative";
       }
     });
