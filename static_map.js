@@ -684,10 +684,10 @@ function update_story(ssp_type) {
     document.getElementById("least_sufficient_continent").innerHTML = least_sufficient_continent.continent;
     document.getElementById("sufficient_continent").innerHTML = sufficient_continent.continent;
 
-    document.getElementById("continent_suffer_most_name").innerHTML = continent_gains_most.continent;
-    document.getElementById("continent_suffer_most_name_variation").innerHTML = continent_gains_most.diffCalories;
-    document.getElementById("continent_suffer_most_sufficiency").innerHTML = least_sufficient_continent.Sufficiency2050;
-    document.getElementById("continent_suffer_most_population").innerHTML = sufficient_continent.Population2050;
+    document.getElementById("continent_suffer_most_name").innerHTML = continent_suffer_most.continent;
+    document.getElementById("continent_suffer_most_name_variation").innerHTML = continent_suffer_most.diffCalories;
+    document.getElementById("continent_suffer_most_sufficiency").innerHTML = continent_suffer_most.Sufficiency2050;
+    document.getElementById("continent_suffer_most_population").innerHTML = continent_suffer_most.Population2050;
   });
 
 }
