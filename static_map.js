@@ -647,6 +647,52 @@ function inside(point, vs) {
   return inside;
 };
 
+function update_story(ssp_type) {
+  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
+    let max_gain = -10000000;
+    let min_gain = 10000000;
+    let max_sufficiency = -10000000;
+    let min_sufficiency = 10000000;
+    let suffient_continent = 'Europe';
+    let continent_gains_most = 'Europe';
+    let sufficient_continent = 'Europe';
+    let least_sufficient_continent = 'Europe';
+    for (let continent of continents) {
+      let diffCalories = +continent.diffCalories;
+      let sufficiency = +continent.Sufficiency2050;
+      console.log(diffCalories, sufficiency, continent)
+      if (diffCalories < min_gain) {
+        continent_suffer_most = continent;
+        min_gain = diffCalories;
+      }
+      else if (diffCalories > max_gain) {
+        continent_gains_most = continent;
+        max_gain = diffCalories;
+      }
+      if (sufficiency < min_sufficiency) {
+        least_sufficient_continent = continent;
+        min_sufficiency = sufficiency;
+      }
+      else if (sufficiency > max_sufficiency) {
+        sufficient_continent = continent;
+        max_sufficiency = sufficiency;
+      }
+    }
+    console.log(continent_suffer_most, continent_gains_most, least_sufficient_continent, sufficient_continent)
+    document.getElementById("continent_suffer_most").innerHTML = continent_suffer_most.continent;
+    document.getElementById("continent_gains_most").innerHTML = continent_gains_most.continent;
+    document.getElementById("least_sufficient_continent").innerHTML = least_sufficient_continent.continent;
+    document.getElementById("sufficient_continent").innerHTML = sufficient_continent.continent;
+
+    document.getElementById("continent_suffer_most_name").innerHTML = continent_gains_most.continent;
+    document.getElementById("continent_suffer_most_name_variation").innerHTML = continent_gains_most.diffCalories;
+    document.getElementById("continent_suffer_most_sufficiency").innerHTML = least_sufficient_continent.Sufficiency2050;
+    document.getElementById("continent_suffer_most_population").innerHTML = sufficient_continent.Population2050;
+  });
+
+}
+
+
 whenDocumentLoaded(() => {
   let countries = {}
   let countries_to_continent = {}
@@ -663,11 +709,8 @@ whenDocumentLoaded(() => {
     let ssp_type = 'SSP' + ssp_nb;
     if (!map.compare_mode) {
       updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
-    } else {
-      updateBothData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv',
-        'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.compare_region + '.csv',
-        map.region, map.compare_region, map.region_type, ssp_type)
     }
+    update_story(ssp_type)
   }
 
   let data = [];
