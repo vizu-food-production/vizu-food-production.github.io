@@ -47,7 +47,7 @@ body {
     font-family: "Open Sans",sans-serif;
     color: #333;
     position: relative;
-    line-height: 1.6;
+    line-height: 1.8;
 }
 
 
@@ -100,10 +100,16 @@ body {
     padding-right: 150px;
 }
 
+.scenarios {
+	margin-top: 80px;
+	margin-bottom: 80px;
+}
+
 
 
 #scenario_choice {
-	padding-bottom: 10px;
+	padding-top: 30px;
+	padding-bottom: 30px;
     text-align: center;
     background-color: #f7f6f1;
     border-bottom: 1px solid #d6d8d8;
@@ -111,11 +117,6 @@ body {
 }
 
 
-#ssp_slider_container {
-	width: 10%
-	padding-left: 8%;
-	padding-right: 8%;
-}
 
 #chart12 {
 	float: right

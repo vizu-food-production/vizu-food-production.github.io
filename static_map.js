@@ -703,8 +703,8 @@ whenDocumentLoaded(() => {
   add_strories(map);
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
-  let ssp_slider = document.getElementById("ssp_range");
-  ssp_slider.oninput = function() {
+  let dropdown_scenario = document.getElementById("select_rcp");
+  dropdown_scenario.onchange = function() {
     let ssp_nb = this.value;
     let ssp_type = 'SSP' + ssp_nb;
     if (!map.compare_mode) {

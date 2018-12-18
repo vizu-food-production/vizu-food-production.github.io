@@ -37,7 +37,7 @@
 
 
 	<div class="intro">
-		<img src="images/header_img.jpg" height="100%" width="100%">
+		<img src="images/header_img.jpg" height="100%" width="100%"><img>
 		<div class="scenarios">
 			<div class="text" height="100%" width="100%">
 
@@ -55,16 +55,24 @@
 				</ul>
 			</div>
 
-			<div id="scenario_choice">
+			<div class="text" height="100%" width="100%">
+				<p>Let's see how food production evolves in each country or contient in terms of the different climate scenarios. </p>
+			</div>	
+		</div>
+
+		<div id="scenario_choice">
 				<div class="choice_title">
 					<h1>Choose a climate scenario:</h1>
 				</div>
 
-				<div id="ssp_slider_container" style="width:50%">
-					<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
-				</div>
+				<select id="select_rcp">
+					<option value="1">RCP 2.6: Green policy</option>
+					<option value="2">RCP 4.5: Reduction policy</option>
+					<option value="4">RCP 6.0: Stabilization policy</option>
+					<option value="5">RCP 8.5: Indifference policy</option>
+				</select>
 			</div>
-		</div>
+
 	</div>
 
 	<div id="right_panel">
