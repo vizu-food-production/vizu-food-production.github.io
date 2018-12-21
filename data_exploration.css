@@ -301,7 +301,7 @@ input[type=submit] {
  	fill: white;
  }
 
- #variation_legend .label, #variation_legend .legendTitle {
+ #variation_legend .label, #variation_legend .legendTitle, #sustainability_legend .label, #sustainability_legend .legendTitle {
 	fill: black;
 	font-size: 12px;
  }
