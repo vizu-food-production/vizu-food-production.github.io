@@ -75,15 +75,37 @@ function add_strories(map) {
     {
       'story': 'story12',
       'scenario': 'SSP1',
-      'region_type': 'Continent',
-      'region': 'Africa',
+      'region_type': 'Country',
+      'region': 'United States of America',
       'displayed_metric': 'sustainability'
     },
     {
       'story': 'story13',
       'scenario': 'SSP5',
-      'region_type': 'Continent',
-      'region': 'Africa',
+      'region_type': 'Country',
+      'region': 'United States of America',
+      'displayed_metric': 'sustainability'
+    },
+    {
+      'story': 'story15',
+      'scenario': 'SSP1',
+      'region_type': 'Country',
+      'region': 'Nigeria',
+      'displayed_metric': 'sustainability'
+    },
+    {
+      'story': 'story16',
+      'scenario': 'SSP5',
+      'region_type': 'Country',
+      'region': 'Nigeria',
+      'displayed_metric': 'sustainability'
+    }
+    ,
+    {
+      'story': 'intro_sustainability',
+      'scenario': 'SSP5',
+      'region_type': 'Global',
+      'region': 'World',
       'displayed_metric': 'sustainability'
     }
   ]
@@ -328,7 +350,18 @@ class Map {
         'x': -8 * this.projection([34.121748, -5.618946])[0] + this.width / 2,
         'y': -8 * this.projection([34.121748, -5.618946])[1] + this.height / 2,
         'k': 8
+      },
+      'Nigeria': {
+        'x': -8 * this.projection([8.977193, 9.289841])[0] + this.width / 2,
+        'y': -8 * this.projection([8.977193, 9.289841])[1] + this.height / 2,
+        'k': 8
+      },
+      'United States of America': {
+        'x': -7 * this.projection([-101.769338, 39.041898])[0] + this.width / 2,
+        'y': -7 * this.projection([-101.769338, 39.041898])[1] + this.height / 2,
+        'k': 7
       }
+
     }
   }
 
