@@ -221,7 +221,7 @@ input[type=submit] {
  #right_panel {
  	width: 33% !important;
  	background-color: rgb(70, 70, 80);
- 	color: #fff;
+ 	color: black;
  	float: right;
  	height: 100%
  }

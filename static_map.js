@@ -78,8 +78,56 @@ function add_strories(map) {
     }
 }
 
+function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, short_labels) {
+  let chart = dc.barChart(chartdiv);
+  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
+    continents.forEach(function(x) {
+      x[yvalues] = +x[yvalues];
+    });
+
+    let ndx = crossfilter(continents),
+      xaxis = ndx.dimension(function(d) {
+        var split = d.continent.split(' ');
+        if (split.length > 1 && short_labels) {
+          return split[0].substring(0,1) + '. ' +split[1].substring(0,1) + '. ';
+        }
+        return d.continent;
+      }),
+      yaxis = xaxis
+      .group().reduceSum(function(d) {
+        return d[yvalues];
+      });
+    chart
+      .width(window.innerWidth / 3.5 * size)
+      .height(window.innerHeight / 5)
+      .x(d3.scaleBand())
+      .xUnits(dc.units.ordinal)
+      .colors(d3.scaleOrdinal().domain(["positive", "negative"])
+        .range(["green", "red"]))
+      .colorAccessor(function(d) {
+        if (d.value > 0) {
+          return "positive";
+        }
+        return "negative";
+      })
+      .brushOn(false)
+      .xAxisLabel("Continent")
+      .yAxisLabel(ylabel)
+      .dimension(xaxis)
+      .group(yaxis)
+      .on('renderlet', function(chart) {
+        chart.selectAll('rect').on("click", function(d) {
+          console.log("click!", d);
+        });
+      });
+    chart.yAxis().tickFormat(d3.format('.2s'));
+    chart.margins().left = 50;
+    chart.render();
+  });
+}
 
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
+  draw_barchart_by_continent(climate_scenario, 'diffCalories', "#chart2", "Variation (%)", 1, false)
   let data = []
   d3.csv(path_to_data, function(csv) {
 
