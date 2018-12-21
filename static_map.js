@@ -366,8 +366,8 @@ class Map {
       let x2_green = dest_green[0], y2_green = dest_green[1]
 
       this.create_ray("#F7D708", x2_yellow, y2_yellow)
-      this.create_ray("#9CCF31", x2_blue, y2_blue)
-      this.create_ray("#004E64", x2_green, y2_green)
+      this.create_ray("#004E64", x2_blue, y2_blue)
+      this.create_ray("#9CCF31", x2_green, y2_green)
     }
   }
 
