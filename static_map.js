@@ -371,46 +371,18 @@ whenDocumentLoaded(() => {
   add_strories(map);
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
-  let data = [];
+  updateData(map, "data/2050/SSP1/SSP1_World.csv", 'World', 'Global', 'SSP1')
 
-  d3.csv("data/2050/SSP1/SSP1_World.csv", function(csv) {
+  background.then(world => {
+    map.land.append('path')
+      .datum(topojson.merge(world, world.objects.countries.geometries))
+      .attr('class', 'land')
+      .attr('d', map.path);
 
-      let population = csv['Population 2050']
-      let requirement = population * 365 * 2355000
-      let calories = csv['Calories 2050']
-      let sufficiency = 100
-      if (requirement > 0) {
-        sufficiency = 100 * calories / requirement
-      }
-
-      let change_in_prod = parseFloat(csv.percent_change_in_production)
-      if (isNaN(change_in_prod)) {
-        change_in_prod = Number.MAX_VALUE
-      }
-
-      data.push({
-        "min_lon": (+csv.min_lon),
-        "max_lon": (+csv.max_lon),
-        "min_lat": -(+csv.min_lat),
-        "max_lat": -(+csv.max_lat),
-        "sufficiency": sufficiency,
-        "percent_change_in_production": change_in_prod
-      });
-    })
-    .then(() => {
-      background.then(world => {
-        map.land.append('path')
-          .datum(topojson.merge(world, world.objects.countries.geometries))
-          .attr('class', 'land')
-          .attr('d', map.path);
-
-        map.boundaries.append('path')
-          .datum(topojson.mesh(world, world.objects.countries))
-          .attr('class', 'boundary')
-          .attr('d', map.path);
-      });
-
-      map.display_data(data, 'World', 'Global', 'SSP1')
-    });
+    map.boundaries.append('path')
+      .datum(topojson.mesh(world, world.objects.countries))
+      .attr('class', 'boundary')
+      .attr('d', map.path);
+  });
 
 });
