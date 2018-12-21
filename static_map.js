@@ -82,6 +82,15 @@ function add_strories(map) {
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
   let data = []
   d3.csv(path_to_data, function(csv) {
+
+      let population = csv['Population 2050']
+      let requirement = population * 365 * 2355000
+      let calories = csv['Calories 2050']
+      let sufficiency = 1
+      if (requirement > 0) {
+        sufficiency = calories / requirement
+      }
+
       let change_in_prod = parseFloat(csv.percent_change_in_production)
       if (isNaN(change_in_prod)) {
         change_in_prod = Number.MAX_VALUE
@@ -91,7 +100,7 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
         "max_lon": (+csv.max_lon),
         "min_lat": -(+csv.min_lat),
         "max_lat": -(+csv.max_lat),
-        "ΔCalories": (+csv.ΔCalories),
+        "sufficiency": sufficiency,
         "percent_change_in_production": change_in_prod
       });
     })
@@ -716,6 +725,15 @@ whenDocumentLoaded(() => {
   let data = [];
 
   d3.csv("data/2050/SSP1/SSP1_World.csv", function(csv) {
+
+      let population = csv['Population 2050']
+      let requirement = population * 365 * 2355000
+      let calories = csv['Calories 2050']
+      let sufficieny = 1
+      if (requirement > 0) {
+        sufficiency = calories / requirement
+      }
+
       let change_in_prod = parseFloat(csv.percent_change_in_production)
       if (isNaN(change_in_prod)) {
         change_in_prod = Number.MAX_VALUE
@@ -726,7 +744,7 @@ whenDocumentLoaded(() => {
         "max_lon": (+csv.max_lon),
         "min_lat": -(+csv.min_lat),
         "max_lat": -(+csv.max_lat),
-        "ΔCalories": (+csv.ΔCalories),
+        "sufficiency": sufficiency,
         "percent_change_in_production": change_in_prod
       });
     })
