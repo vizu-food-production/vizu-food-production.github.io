@@ -128,7 +128,7 @@ class Map {
     this.climate_scenario = 'SSP1'
     this.region = 'World'
     this.region_type = 'Global'
-    this.metric = 'Variation'
+    this.metric = 'Sufficiency'
 
     this.main_data = []
 
@@ -171,7 +171,31 @@ class Map {
     }
   }
 
-  draw_legend(color_scale) {
+  get_legend(metric, color_scale) {
+    if (metric == 'Variation') {
+      let legendLinear = d3.legendColor()
+        .shapeWidth(window.innerWidth / 37)
+        .shapeHeight(window.innerWidth / 50)
+        .title("Predicted percent change in calory production between 2000 and 2050 (%)")
+        .orient('horizontal')
+        .cells([-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100])
+        .scale(color_scale);
+
+      return legendLinear;
+    } else {
+      let legendLinear = d3.legendColor()
+        .shapeWidth(window.innerWidth / 37)
+        .shapeHeight(window.innerWidth / 50)
+        .title("Predicted percent change in calory production between 2000 and 2050 (%)")
+        .orient('horizontal')
+        .cells([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+        .scale(color_scale);
+
+      return legendLinear;
+    }
+  }
+
+  draw_legend(metric, color_scale) {
     let xpos = window.innerWidth / 5;
     let ypos = window.innerHeight * 0.85;
     let svg = d3.select("svg");
@@ -182,13 +206,8 @@ class Map {
       .attr("class", "legendLinear")
       .attr("transform", "translate(" + xpos + "," + ypos + ")")
 
-    let legendLinear = d3.legendColor()
-      .shapeWidth(window.innerWidth / 37)
-      .shapeHeight(window.innerWidth / 50)
-      .title("Predicted percent change in calory production between 2000 and 2050 (%)")
-      .orient('horizontal')
-      .cells([-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100])
-      .scale(color_scale);
+
+    let legendLinear = this.get_legend(metric, color_scale)
 
     svg.select(".legendLinear")
       .call(legendLinear);
@@ -201,7 +220,7 @@ class Map {
 
     const colorScale = this.get_color_scale(this.metric)
 
-    this.draw_legend(colorScale)
+    this.draw_legend(this.metric, colorScale)
 
     let dataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
@@ -268,8 +287,8 @@ class Map {
     }
     else {
       const colorScale = d3.scaleLinear()
-        .domain([0, 100, 200])
-        .range(['red', 'white', 'blue'])
+        .domain([0, 50, 100])
+        .range(['#F7D708', '#9CCF31', '#009ECE'])
       colorScale.clamp(true)
 
       return colorScale;
