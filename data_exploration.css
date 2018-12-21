@@ -11,10 +11,10 @@ It switches from
 	https://mdn.mozillademos.org/files/13647/box-model-standard-small.png
 to
 	https://mdn.mozillademos.org/files/13649/box-model-alt-small.png
-*/
-* {
-	box-sizing: border-box;
-}
+	*/
+	* {
+		box-sizing: border-box;
+	}
 
 /*
 Make the document fill the whole viewport, this overrides any weird defaults that browsers might have.
@@ -44,21 +44,19 @@ body {
 	font-family: sans-serif;
 	font-size: 1.5rem;
 	text-align: justify;
-    font-family: "Open Sans",sans-serif;
-    color: #333;
-    position: relative;
-    line-height: 1.8;
+	font-family: "Open Sans",sans-serif;
+	color: #333;
+	position: relative;
+	line-height: 2;
 }
 
 
 
-/* Data Exploration*/
-
 #header {
 	width: 100%;
-    background-color: rgb(40, 40, 40);
-    color: rgb(250, 250, 250);
-    height: 50px;
+	background-color: rgb(40, 40, 40);
+	color: rgb(250, 250, 250);
+	height: 50px;
 }
 
 #header a {
@@ -74,30 +72,30 @@ body {
 }
 
 #header .to_map:hover {
-  background-color: rgb(70, 70, 70);
-  color: rgb(250, 250, 250);
-  text-decoration: none;
+	background-color: rgb(70, 70, 70);
+	color: rgb(250, 250, 250);
+	text-decoration: none;
 }
 
 
 #header .header-right {
-  float: right;
+	float: right;
 }
 
 
 #intro .image {
 	display: block;
 	margin-left: auto;
-  	margin-right: auto;
+	margin-right: auto;
 }
 
 
 .text {
 	font-size: 20px;
 	padding-top: 20px;
-    padding-bottom: 20px; 
-    padding-left: 150px;
-    padding-right: 150px;
+	padding-bottom: 20px; 
+	padding-left: 150px;
+	padding-right: 150px;
 }
 
 .scenarios {
@@ -106,14 +104,74 @@ body {
 }
 
 
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+}
+
+
+input[type=submit] {
+  background-color: #AAAAAA;
+  color: #fff;
+  cursor: pointer;
+  width: 5%
+}
+
+.autocomplete {
+  position: relative;
+  display: inline-block;
+  width: 30%;
+  float: left;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #BBB;
+  border-bottom: none;
+  border-top: none;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+	font-size: 2;
+	cursor: pointer;
+	background-color: #fff; 
+	border-bottom: 1px solid #BBB; 
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+	background-color: #e9e9e9; 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+	background-color: #BBB !important; 
+	color: #ffffff; 
+}
+
+.graph {
+	font-size: 20px;
+	padding-top: 20px;
+	padding-bottom: 20px; 
+	padding-left: 150px;
+	padding-right: 150px;
+}
+
 
 #scenario_choice {
 	padding-top: 30px;
 	padding-bottom: 30px;
-    text-align: center;
-    background-color: #f7f6f1;
-    border-bottom: 1px solid #d6d8d8;
-    border-top: 1px solid #d6d8d8;
+	text-align: center;
+	background-color: #f7f6f1;
+	border-bottom: 1px solid #d6d8d8;
+	border-top: 1px solid #d6d8d8;
 }
 
 
@@ -148,126 +206,126 @@ body {
 }
 
 .unselectable {
-   -moz-user-select: -moz-none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
 
    /*
      Introduced in IE 10.
      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-   */
-   -ms-user-select: none;
-   user-select: none;
-}
+     */
+     -ms-user-select: none;
+     user-select: none;
+ }
 
-#right_panel {
-	width: 33% !important;
-	background-color: rgb(70, 70, 80);
-	color: #fff;
-	float: right;
-	height: 100%
-}
+ #right_panel {
+ 	width: 33% !important;
+ 	background-color: rgb(70, 70, 80);
+ 	color: #fff;
+ 	float: right;
+ 	height: 100%
+ }
 
-.spacer {
-	height: 100%;
-	width: 100%;
-}
+ .spacer {
+ 	height: 100%;
+ 	width: 100%;
+ }
 
-#story2 {
-	height: 50%;
-}
-
-
-
-#right_panel .handle{
-	background-color: #2E2E2E;
-  left: -30px;
-  position: absolute;
-  top: 40%;
-  width: 30px;
-  cursor: pointer;
-}
-
-#analytics_container {
-	padding-left: 3%;
-}
-
-#analytics_mode, #compare_mode {
-	width: 48%;
-}
-
-#analytics_mode {
-	background-color: white;
-	color: #2E2E2E;
-}
-
-#compare_mode {
-	background-color: #2E2E2E;
-	color: white;
-}
-
-#swap_regions {
-	width: 96%;
-	background-color: #2E2E2E;
-	color: white;
-}
-
-.sphere {
-  fill: rgb(40, 40, 40);
-}
-
-.land {
-  fill: rgb(60, 60, 60);
-}
-
-.boundary {
-  fill: none;
-  stroke: #76b6c4;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-}
-
-#analytics_container button {
-	color: #000000;
-}
-
-.label, .legendTitle {
-	fill: white;
-}
+ #story2 {
+ 	height: 50%;
+ }
 
 
-svg {
-	margin-bottom: 1rem;
-}
 
-.blue {
-	background-color: #3883d8;
-}
-.turqoise {
-	background-color: #38ced7;
-}
-.brown {
-	background-color: #a66f28;
-}
-.bordeaux {
-	background-color: #953543;
-}
-.skin {
-	background-color: #ED9F4C;
-}
-.black {
-	background-color: #000000;
-}
-.white {
-	background-color: #FFFFFF;
-}
-.red {
-	background-color: #cf3535;
-}
-.green {
-	background-color: #22d659;
-}
-.orange {
-	background-color: #ea6300;
-}
+ #right_panel .handle{
+ 	background-color: #2E2E2E;
+ 	left: -30px;
+ 	position: absolute;
+ 	top: 40%;
+ 	width: 30px;
+ 	cursor: pointer;
+ }
+
+ #analytics_container {
+ 	padding-left: 3%;
+ }
+
+ #analytics_mode, #compare_mode {
+ 	width: 48%;
+ }
+
+ #analytics_mode {
+ 	background-color: white;
+ 	color: #2E2E2E;
+ }
+
+ #compare_mode {
+ 	background-color: #2E2E2E;
+ 	color: white;
+ }
+
+ #swap_regions {
+ 	width: 96%;
+ 	background-color: #2E2E2E;
+ 	color: white;
+ }
+
+ .sphere {
+ 	fill: rgb(40, 40, 40);
+ }
+
+ .land {
+ 	fill: rgb(60, 60, 60);
+ }
+
+ .boundary {
+ 	fill: none;
+ 	stroke: #76b6c4;
+ 	stroke-linejoin: round;
+ 	stroke-linecap: round;
+ 	vector-effect: non-scaling-stroke;
+ }
+
+ #analytics_container button {
+ 	color: #000000;
+ }
+
+ .label, .legendTitle {
+ 	fill: white;
+ }
+
+
+ svg {
+ 	margin-bottom: 1rem;
+ }
+
+ .blue {
+ 	background-color: #3883d8;
+ }
+ .turqoise {
+ 	background-color: #38ced7;
+ }
+ .brown {
+ 	background-color: #a66f28;
+ }
+ .bordeaux {
+ 	background-color: #953543;
+ }
+ .skin {
+ 	background-color: #ED9F4C;
+ }
+ .black {
+ 	background-color: #000000;
+ }
+ .white {
+ 	background-color: #FFFFFF;
+ }
+ .red {
+ 	background-color: #cf3535;
+ }
+ .green {
+ 	background-color: #22d659;
+ }
+ .orange {
+ 	background-color: #ea6300;
+ }

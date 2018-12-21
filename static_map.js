@@ -562,7 +562,7 @@ function draw_piechart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
 
 function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, short_labels) {
   let chart = dc.barChart(chartdiv);
-  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
+  d3.csv("data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
     continents.forEach(function(x) {
       x[yvalues] = +x[yvalues];
     });
