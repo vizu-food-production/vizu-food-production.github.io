@@ -328,7 +328,6 @@ function draw_charts(ssp_type, region, region_type) {
     get_world_facts(ssp_type);
     draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Production (%)", 1, true)
     draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation (%)", 1, true)
-    draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)", 1, true)
     document.getElementById("analytics_title").innerHTML = 'World View';
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
@@ -448,6 +447,12 @@ whenDocumentLoaded(() => {
     let ssp_nb = this.value;
     let ssp_type = 'SSP' + ssp_nb;
     updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
+  }
+
+  let dropdown_metric = document.getElementById("select_metric");
+  dropdown_metric.onchange = function() {
+    let metric = this.value;
+    map.change_displayed_metric(metric)
   }
 
   let data = [];
