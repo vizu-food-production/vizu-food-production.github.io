@@ -86,9 +86,9 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
       let population = csv['Population 2050']
       let requirement = population * 365 * 2355000
       let calories = csv['Calories 2050']
-      let sufficiency = 1
+      let sufficiency = 100
       if (requirement > 0) {
-        sufficiency = calories / requirement
+        sufficiency = 100 * calories / requirement
       }
 
       let change_in_prod = parseFloat(csv.percent_change_in_production)
@@ -128,6 +128,7 @@ class Map {
     this.climate_scenario = 'SSP1'
     this.region = 'World'
     this.region_type = 'Global'
+    this.metric = 'Variation'
 
     this.main_data = []
 
@@ -198,10 +199,7 @@ class Map {
 
     const context = this;
 
-    const colorScale = d3.scaleLinear()
-      .domain([-100, 0, 100])
-      .range(['red', 'yellow', 'green'])
-    colorScale.clamp(true)
+    const colorScale = this.get_color_scale(this.metric)
 
     this.draw_legend(colorScale)
 
@@ -234,7 +232,7 @@ class Map {
         context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
         context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
         context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-      .style('fill', d => colorScale(d.percent_change_in_production))
+      .style('fill', d => { if (this.metric == 'Variation') { return colorScale(d.percent_change_in_production) } else { return colorScale(d.sufficiency) } })
       .attr('transform', context.transform)
       .attr('opacity', 0)
       .transition()
@@ -249,7 +247,7 @@ class Map {
         context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
         context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
       .attr('transform', context.transform)
-      .style('fill', d => colorScale(d.percent_change_in_production));
+      .style('fill', d => { if (this.metric == 'Variation') { return colorScale(d.percent_change_in_production) } else { return colorScale(d.sufficiency) } });
 
     dataPoints
       .exit()
@@ -259,6 +257,40 @@ class Map {
       .remove();
   }
 
+  get_color_scale(metric) {
+    if (metric == 'Variation') {
+      const colorScale = d3.scaleLinear()
+        .domain([-100, 0, 100])
+        .range(['red', 'yellow', 'green'])
+      colorScale.clamp(true)
+
+      return colorScale;
+    }
+    else {
+      const colorScale = d3.scaleLinear()
+        .domain([0, 100, 200])
+        .range(['red', 'white', 'blue'])
+      colorScale.clamp(true)
+
+      return colorScale;
+    }
+  }
+
+  change_displayed_metric(metric) {
+    if (metric != this.metric) {
+      this.metric = metric
+
+      const colorScale = this.get_color_scale(metric)
+
+      let dataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
+
+      dataPoints
+        .transition()
+        .duration(1000)
+        .style('fill', d => { if (metric == 'Variation') { return colorScale(d.percent_change_in_production) } else { return colorScale(d.sufficiency) } });
+    }
+  }
+
   zoom_on_continent(x, y, k) {
     this.transform.x = x
     this.transform.y = y
@@ -266,67 +298,11 @@ class Map {
   }
 }
 
-function update_story(ssp_type) {
-  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
-    let max_gain = -10000000;
-    let min_gain = 10000000;
-    let max_sufficiency = -10000000;
-    let min_sufficiency = 10000000;
-    let suffient_continent = 'Europe';
-    let continent_gains_most = 'Europe';
-    let sufficient_continent = 'Europe';
-    let least_sufficient_continent = 'Europe';
-    for (let continent of continents) {
-      let diffCalories = +continent.diffCalories;
-      let sufficiency = +continent.Sufficiency2050;
-      console.log(diffCalories, sufficiency, continent)
-      if (diffCalories < min_gain) {
-        continent_suffer_most = continent;
-        min_gain = diffCalories;
-      }
-      else if (diffCalories > max_gain) {
-        continent_gains_most = continent;
-        max_gain = diffCalories;
-      }
-      if (sufficiency < min_sufficiency) {
-        least_sufficient_continent = continent;
-        min_sufficiency = sufficiency;
-      }
-      else if (sufficiency > max_sufficiency) {
-        sufficient_continent = continent;
-        max_sufficiency = sufficiency;
-      }
-    }
-    console.log(continent_suffer_most, continent_gains_most, least_sufficient_continent, sufficient_continent)
-    document.getElementById("continent_suffer_most").innerHTML = continent_suffer_most.continent;
-    document.getElementById("continent_gains_most").innerHTML = continent_gains_most.continent;
-    document.getElementById("least_sufficient_continent").innerHTML = least_sufficient_continent.continent;
-    document.getElementById("sufficient_continent").innerHTML = sufficient_continent.continent;
-
-    document.getElementById("continent_suffer_most_name").innerHTML = continent_suffer_most.continent;
-    document.getElementById("continent_suffer_most_name_variation").innerHTML = continent_suffer_most.diffCalories;
-    document.getElementById("continent_suffer_most_sufficiency").innerHTML = continent_suffer_most.Sufficiency2050;
-    document.getElementById("continent_suffer_most_population").innerHTML = continent_suffer_most.Population2050;
-  });
-
-}
-
-
 whenDocumentLoaded(() => {
   const map = new Map();
 
   add_strories(map);
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
-
-  let dropdown_scenario = document.getElementById("select_rcp");
-  dropdown_scenario.onchange = function() {
-    let ssp_nb = this.value;
-    let ssp_type = 'SSP' + ssp_nb;
-    if (!map.compare_mode) {
-      updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
-    }
-    update_story(ssp_type)
-  }
 
   let data = [];
 
@@ -335,9 +311,9 @@ whenDocumentLoaded(() => {
       let population = csv['Population 2050']
       let requirement = population * 365 * 2355000
       let calories = csv['Calories 2050']
-      let sufficiency = 1
+      let sufficiency = 100
       if (requirement > 0) {
-        sufficiency = calories / requirement
+        sufficiency = 100 * calories / requirement
       }
 
       let change_in_prod = parseFloat(csv.percent_change_in_production)
