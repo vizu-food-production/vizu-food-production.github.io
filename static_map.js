@@ -60,8 +60,6 @@ function add_strories(map) {
     },
   ]
 
-function add_strories(map) {
-
   let variationLegend = document.getElementById("variation_legend");
   new ScrollMagic.Scene({
     triggerElement: variationLegend,
