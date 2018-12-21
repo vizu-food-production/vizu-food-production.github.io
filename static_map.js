@@ -467,6 +467,8 @@ class Map {
 
       const colorScale = this.get_color_scale(metric)
 
+      this.draw_legend(metric, colorScale)
+
       let dataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
       dataPoints
