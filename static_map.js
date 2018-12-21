@@ -306,9 +306,9 @@ class Map {
     this.circles.append('line')
       .style("stroke", color)
       .attr("x1", window.innerWidth * 0.67)
-      .attr("y1", 0)
+      .attr("y1", 80)
       .attr("x2", window.innerWidth * 0.67)
-      .attr("y2", 0)
+      .attr("y2", 80)
       .transition()
       .duration(1000)
       .attr("x2", x2)
@@ -466,7 +466,7 @@ class Map {
     } else {
       const colorScale = d3.scaleLinear()
         .domain([0, 50, 100])
-        .range(['#F7D708', '#9CCF31', '#009ECE'])
+        .range(['#F7D708', '#9CCF31', '#004E64'])
       colorScale.clamp(true)
 
       return colorScale;
