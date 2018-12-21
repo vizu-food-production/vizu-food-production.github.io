@@ -245,7 +245,7 @@ class Map {
   draw_legend(metric, color_scale) {
     let xpos = window.innerWidth / 5;
     let ypos = window.innerHeight * 0.85;
-    let svg = d3.select("svg");
+    let svg = this.svg;
 
     svg.selectAll(".legendLinear").remove()
 
@@ -327,7 +327,7 @@ class Map {
     if (metric == 'Variation') {
       const colorScale = d3.scaleLinear()
         .domain([-100, 0, 100])
-        .range(['#C11432', 'yellow', '#66A64F'])
+        .range(['#C11432', '#FDD10A', '#66A64F'])
       colorScale.clamp(true)
 
       return colorScale;
