@@ -63,7 +63,7 @@ body {
 	text-align: center;
 	padding: 12px;
 	text-decoration: none;
-	font-size: 20px; 
+	font-size: 20px;
 	line-height: 25px;
 	border-radius: 4px;
 	margin: 0 0 0px;
@@ -95,18 +95,10 @@ body {
 	padding-right: 8%;
 }
 
-#chart12 {
-	float: right
-	width: 50%
-}
-#chart1 {
-	float: left;
-	width: 50%
-}
-
 #map {
+	background: rgb(20, 20, 20);
 	float: left;
-	width: 100%;
+	width: 67%;
 	height: 100%;
 }
 
@@ -137,19 +129,16 @@ body {
 }
 
 #right_panel {
-	width: 33% !important;
-	margin-top: 50px;
-	background-color: rgb(70, 70, 80);
-	color: #fff;
+ width: 33% !important;
+ background-color: rgb(250, 250, 250);
+ color: black;
+ float: right;
+ height: 100%;
+ padding-top: 50px;
 }
 
-#right_panel .handle{
-	background-color: #2E2E2E;
-    left: -30px;
-  position: absolute;
-  top: 40%;
-  width: 30px;
-  cursor: pointer;
+.axis .tick text {
+	font-size: 15px;
 }
 
 #analytics_container {

@@ -26,26 +26,33 @@
 		</div>
 	</div>
 
-	<div id="map"></div>
+	<div id="map">
+		<svg>
+			<g id='container'>
+			</g>
+		</svg>
+	</div>
+
 		<div id="mouse_region" unselectable="on" class="unselectable"></div>
 
 		<div id="right_panel">
-			<div class="handle">
-				<span class="glyphicon glyphicon-chevron-left"></span>
-			</div>
 			<div id="analytics_container">
-				<button type="button" id="analytics_mode">Analytics</button>
-				<button type="button" id="compare_mode">Compare</button>
-				<div id="ssp_slider_container">
-					<h3>Climate Scenario</h3>
-					<input type="range" min="1" max="5" value="1" class="slider" id="ssp_range">
+
+				<div id="choice_title">
+					<h3>Choose a climate scenario:</h3>
 				</div>
+				<select id="select_rcp">
+					<option value="1">SSP1: Sustainability</option>
+					<option value="2">SSP2: Middle of the road</option>
+					<option value="3">SSP3: Regional rivalry</option>
+					<option value="4">SSP4: Inequality</option>
+					<option value="5">SSP5: Fossil fuel development</option>
+				</select>
 				<h1 id="analytics_title">World</h1>
 				<ul id='facts'></ul>
 				<div id="world">
 					<p>Predicted proportion of Calorie production by continent</p>
-					<div id="chart1" display='block'></div>
-					<div id="chart12" display='block'></div>
+					<div id="chart1"></div>
 					<p>Calorie production variation by continent</p>
 					<div id="chart2"></div>
 					<p>Predicted calorie Suffiency by continent</p>
@@ -54,9 +61,6 @@
 				<div id="continent">
 				</div>
 				<div id="country">
-				</div>
-				<div id="comparison" display='none'>
-					<button type="button" id="swap_regions">Swap regions</div>
 				</div>
 			</div>
 		</div>

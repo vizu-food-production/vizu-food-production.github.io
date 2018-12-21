@@ -18,6 +18,15 @@ function whenDocumentLoaded(action) {
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
   let data = []
   d3.csv(path_to_data, function(csv) {
+
+      let population = csv['Population 2050']
+      let requirement = population * 365 * 2355000
+      let calories = csv['Calories 2050']
+      let sufficiency = 100
+      if (requirement > 0) {
+        sufficiency = 100 * calories / requirement
+      }
+
       let change_in_prod = parseFloat(csv.percent_change_in_production)
       if (isNaN(change_in_prod)) {
         change_in_prod = Number.MAX_VALUE
@@ -27,7 +36,7 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
         "max_lon": (+csv.max_lon),
         "min_lat": -(+csv.min_lat),
         "max_lat": -(+csv.max_lat),
-        "ΔCalories": (+csv.ΔCalories),
+        "sufficiency": sufficiency,
         "percent_change_in_production": change_in_prod
       });
     })
@@ -36,73 +45,28 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
     });
 }
 
-function updateBothData(map, path_to_data, path_to_compare_data, region, compare_region, region_type, climate_scenario) {
-  let data = []
-  let compare_data = []
-  d3.csv(path_to_data, function(csv) {
-      let change_in_prod = parseFloat(csv.percent_change_in_production)
-      if (isNaN(change_in_prod)) {
-        change_in_prod = Number.MAX_VALUE
-      }
-      data.push({
-        "min_lon": (+csv.min_lon),
-        "max_lon": (+csv.max_lon),
-        "min_lat": -(+csv.min_lat),
-        "max_lat": -(+csv.max_lat),
-        "ΔCalories": (+csv.ΔCalories),
-        "percent_change_in_production": change_in_prod
-      });
-    })
-    .then(() => {
-      if (compare_region != 'None') {
-        d3.csv(path_to_compare_data, function(csv) {
-            let change_in_prod = parseFloat(csv.percent_change_in_production)
-            if (isNaN(change_in_prod)) {
-              change_in_prod = Number.MAX_VALUE
-            }
-            compare_data.push({
-              "min_lon": (+csv.min_lon),
-              "max_lon": (+csv.max_lon),
-              "min_lat": -(+csv.min_lat),
-              "max_lat": -(+csv.max_lat),
-              "ΔCalories": (+csv.ΔCalories),
-              "percent_change_in_production": change_in_prod
-            });
-          })
-          .then(() => {
-            map.display_both_regions(data, compare_data, region, compare_region, region_type, climate_scenario)
-          });
-      } else {
-        map.display_both_regions(data, [], region, compare_region, region_type, climate_scenario)
-      }
-    });
-}
-
 class Map {
   constructor() {
-    this.width = window.innerWidth;
+    this.width = window.innerWidth * 0.66;
     this.height = window.innerHeight;
-    this.projection = d3.geoEqualEarth()
-      .translate([4 * this.width / 9, this.height / 2])
+    this.projection = d3.geoWinkel3()
+      .translate([4 * this.width / 9, this.height / 1.8])
       .scale((this.width) / 5);
     this.path = d3.geoPath()
       .projection(this.projection);
-    this.svg = d3.select('#map').append('svg')
+    this.svg = d3.select('#map').select('svg')
       .attr('width', this.width)
       .attr('height', this.height);
-    this.land = this.svg.append('g');
-    this.circles = this.svg.append('g');
-    this.boundaries = this.svg.append('g');
+    this.land = this.svg.select('#container').append('g');
+    this.circles = this.svg.select('#container').append('g');
+    this.boundaries = this.svg.select('#container').append('g');
     this.transform = d3.zoomIdentity
     this.climate_scenario = 'SSP1'
     this.region = 'World'
     this.region_type = 'Global'
-
-    this.compare_mode = false
-    this.compare_region = 'None'
+    this.metric = 'Variation'
 
     this.main_data = []
-    this.compare_data = []
 
     this.predefined_zoom_levels = {
       'World': {
@@ -143,10 +107,34 @@ class Map {
     }
   }
 
-  draw_legend(color_scale) {
+  get_legend(metric, color_scale) {
+    if (metric == 'Variation') {
+      let legendLinear = d3.legendColor()
+        .shapeWidth(window.innerWidth / 37)
+        .shapeHeight(window.innerWidth / 50)
+        .title("Predicted percent change in calory production between 2000 and 2050 (%)")
+        .orient('horizontal')
+        .cells([-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100])
+        .scale(color_scale);
+
+      return legendLinear;
+    } else {
+      let legendLinear = d3.legendColor()
+        .shapeWidth(window.innerWidth / 37)
+        .shapeHeight(window.innerWidth / 50)
+        .title("Predicted sustainability in 2050 (%)")
+        .orient('horizontal')
+        .cells([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+        .scale(color_scale);
+
+      return legendLinear;
+    }
+  }
+
+  draw_legend(metric, color_scale) {
     let xpos = window.innerWidth / 5;
     let ypos = window.innerHeight * 0.85;
-    let svg = d3.select("svg");
+    let svg = this.svg;
 
     svg.selectAll(".legendLinear").remove()
 
@@ -154,217 +142,129 @@ class Map {
       .attr("class", "legendLinear")
       .attr("transform", "translate(" + xpos + "," + ypos + ")")
 
-    let legendLinear = d3.legendColor()
-      .shapeWidth(window.innerWidth / 37)
-      .shapeHeight(window.innerWidth / 50)
-      .title("Predicted percent change in calory production between 2000 and 2050 (%)")
-      .orient('horizontal')
-      .cells([-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100])
-      .scale(color_scale);
+
+    let legendLinear = this.get_legend(metric, color_scale)
 
     svg.select(".legendLinear")
       .call(legendLinear);
   }
 
   display_data(data, region, region_type, climate_scenario) {
-    if (this.compare_mode) {
-      this.compare_data = data
-    }
-    else {
-      this.main_data = data
-    }
+
+    this.main_data = data
 
     const context = this;
 
-    const colorScale = d3.scaleLinear()
-      .domain([-100, 0, 100])
-      .range(['red', 'yellow', 'green'])
-    colorScale.clamp(true)
+    const colorScale = this.get_color_scale(this.metric)
 
-    this.draw_legend(colorScale)
+    this.draw_legend(this.metric, colorScale)
 
-    if (this.compare_mode && this.region != 'None') {
-      if (region != this.region) {
-        this.compare_region = region
-        draw_compare_charts(climate_scenario, this.region, this.compare_region, region_type)
+    let dataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
+    console.log('region', region, 'region_type', region_type)
+    if (region in this.predefined_zoom_levels) {
+      console.log('ZOOOm')
+      let zoom_level = this.predefined_zoom_levels[region]
+      this.zoom_on_continent(zoom_level['x'], zoom_level['y'], zoom_level['k'])
 
-        let mainDataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
-        let compareDataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
+      this.land
+        .selectAll('path') // To prevent stroke width from scaling
+        .transition()
+        .duration(1000)
+        .attr('transform', this.transform);
 
-        mainDataPoints
-          .exit()
-          .transition()
-          .duration(1000)
-          .attr('opacity', 0)
-          .remove();
-
-        compareDataPoints
-          .enter().append('polygon')
-          .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-            context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-            context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-            context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-          .style('fill', d => colorScale(d.percent_change_in_production))
-          .attr('transform', context.transform)
-          .attr('opacity', 0)
-          .transition()
-          .duration(1000)
-          .attr('opacity', 1);
-      }
+      this.boundaries
+        .selectAll('path') // To prevent stroke width from scaling
+        .transition()
+        .duration(1000)
+        .attr('transform', this.transform);
     }
-    else {
-      draw_charts(climate_scenario, region, region_type)
-      let dataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
-      if ((region_type == 'Continent' || region_type == 'Global') && (region_type != this.region_type || region != this.region)) {
-        let zoom_level = this.predefined_zoom_levels[region]
-        this.zoom_on_continent(zoom_level['x'], zoom_level['y'], zoom_level['k'])
+    this.region = region
+    this.region_type = region_type
+    this.climate_scenario = climate_scenario
 
-        this.land
-          .selectAll('path') // To prevent stroke width from scaling
-          .transition()
-          .duration(1000)
-          .attr('transform', this.transform);
+    dataPoints
+      .enter().append('polygon')
+      .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
+        context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+      .style('fill', d => {
+        if (this.metric == 'Variation') {
+          return colorScale(d.percent_change_in_production)
+        } else {
+          return colorScale(d.sufficiency)
+        }
+      })
+      .attr('transform', context.transform)
+      .attr('opacity', 0)
+      .transition()
+      .duration(1000)
+      .attr('opacity', 1);
 
-        this.boundaries
-          .selectAll('path') // To prevent stroke width from scaling
-          .transition()
-          .duration(1000)
-          .attr('transform', this.transform);
-      }
+    dataPoints
+      .transition()
+      .duration(1000)
+      .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
+        context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
+        context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
+      .attr('transform', context.transform)
+      .style('fill', d => {
+        if (this.metric == 'Variation') {
+          return colorScale(d.percent_change_in_production)
+        } else {
+          return colorScale(d.sufficiency)
+        }
+      });
 
-      this.region = region
-      this.region_type = region_type
-      this.climate_scenario = climate_scenario
-
-      dataPoints
-        .enter().append('polygon')
-        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-        .style('fill', d => colorScale(d.percent_change_in_production))
-        .attr('transform', context.transform)
-        .attr('opacity', 0)
-        .transition()
-        .duration(1000)
-        .attr('opacity', 1);
-
-      dataPoints
-        .transition()
-        .duration(1000)
-        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-        .attr('transform', context.transform)
-        .style('fill', d => colorScale(d.percent_change_in_production));
-
-      dataPoints
-        .exit()
-        .transition()
-        .duration(1000)
-        .attr('opacity', 0)
-        .remove();
-    }
+    dataPoints
+      .exit()
+      .transition()
+      .duration(1000)
+      .attr('opacity', 0)
+      .remove();
   }
 
-  display_both_regions(data, compare_data, region, compare_region, region_type, climate_scenario) {
-    if (this.compare_mode) {
-      this.main_data = data
-      this.compare_data = compare_data
-      this.region = region
-      this.compare_region = compare_region
-      this.region_type = region_type
-      this.climate_scenario = climate_scenario
-
-      const context = this;
-
+  get_color_scale(metric) {
+    if (metric == 'Variation') {
       const colorScale = d3.scaleLinear()
         .domain([-100, 0, 100])
-        .range(['red', 'yellow', 'green'])
+        .range(['#C11432', '#FDD10A', '#66A64F'])
       colorScale.clamp(true)
 
-      this.draw_legend(colorScale)
+      return colorScale;
+    } else {
+      const colorScale = d3.scaleLinear()
+        .domain([0, 50, 100])
+        .range(['#F7D708', '#9CCF31', '#004E64'])
+      colorScale.clamp(true)
 
-      draw_compare_charts(climate_scenario, this.region, this.compare_region, region_type)
-
-      let dataPoints = this.circles.selectAll('polygon').data(data.concat(compare_data), d => d.min_lon.toString() + "," + d.min_lat.toString());
-
-      dataPoints
-        .enter().append('polygon')
-        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-        .style('fill', d => colorScale(d.percent_change_in_production))
-        .attr('transform', context.transform)
-        .attr('opacity', 0)
-        .transition()
-        .duration(1000)
-        .attr('opacity', 1);
-
-      dataPoints
-        .transition()
-        .duration(1000)
-        .attr('points', d => context.projection([d.min_lon, d.min_lat])[0] + ',' + context.projection([d.min_lon, d.min_lat])[1] + ' ' +
-          context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
-          context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-        .attr('transform', context.transform)
-        .style('fill', d => colorScale(d.percent_change_in_production));
-
-      dataPoints
-        .exit()
-        .transition()
-        .duration(1000)
-        .attr('opacity', 0)
-        .remove();
+      return colorScale;
     }
   }
 
-  switch_data() {
-    if (this.compare_mode) {
-      let new_compare_data = this.main_data.slice(0)
-      this.main_data = this.compare_data
-      this.compare_data = new_compare_data
+  change_displayed_metric(metric) {
+    console.log(metric, this.metric)
+    if (metric != this.metric) {
+      this.metric = metric
 
-      let new_compare_region = this.region
-      this.region = this.compare_region
-      this.compare_region = new_compare_region
+      const colorScale = this.get_color_scale(metric)
 
-      draw_compare_charts(this.climate_scenario, this.region, this.compare_region, this.region_type)
-    }
-  }
+      this.draw_legend(metric, colorScale)
 
-  clear_data() {
-    if (this.compare_mode) {
-      let mainDataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
+      let dataPoints = this.circles.selectAll('polygon').data(this.main_data, d => d.min_lon.toString() + "," + d.min_lat.toString());
 
-      mainDataPoints
-        .exit()
+      dataPoints
         .transition()
         .duration(1000)
-        .attr('opacity', 0)
-        .remove();
-
-      this.compare_region = 'None'
-      this.compare_data = []
-      draw_compare_charts(this.climate_scenario, this.region, 'None', this.region_type)
-    }
-    else {
-      this.region_type = 'None'
-      this.region = 'None'
-      this.main_data = []
-      this.compare_data = []
-
-      this.circles.selectAll('polygon')
-        .transition()
-        .duration(1000)
-        .attr('opacity', 0)
-        .remove();
-
-      remove_charts()
+        .style('fill', d => {
+          if (metric == 'Variation') {
+            return colorScale(d.percent_change_in_production)
+          } else {
+            return colorScale(d.sufficiency)
+          }
+        });
     }
   }
 
@@ -372,6 +272,17 @@ class Map {
     this.transform.x = x
     this.transform.y = y
     this.transform.k = k
+  }
+
+  clear_data() {
+    this.main_data = []
+    this.circles.selectAll('polygon')
+      .transition()
+      .duration(1000)
+      .attr('opacity', 0)
+      .remove();
+    this.region = 'None'
+    this.region_type = 'None'
   }
 }
 
@@ -413,91 +324,35 @@ function get_continent_facts(continent, ssp_type) {
 function draw_charts(ssp_type, region, region_type) {
   if (region_type == 'None' || region_type == 'Global') {
     get_world_facts(ssp_type);
-    draw_piechart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Production (%)")
-    draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart12", "Production (%)", 0.55, true)
-    draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation (%)", 1, false)
-    draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)", 1, false)
+    draw_barchart_by_continent(ssp_type, 'Percentageoftotalcal2050', "#chart1", "Production (%)", 1, true)
+    draw_barchart_by_continent(ssp_type, 'diffCalories', "#chart2", "Variation (%)", 1, true)
+    draw_barchart_by_continent(ssp_type, 'Sufficiency2050', "#chart3", "Sufficiency (%)", 1, true)
     document.getElementById("analytics_title").innerHTML = 'World View';
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
     document.getElementById("world").style.display = 'block';
-    document.getElementById("comparison").style.display = 'none';
   } else if (region_type == 'Continent') {
     get_continent_facts(region, ssp_type);
     document.getElementById("analytics_title").innerHTML = 'Continent: ' + region;
     document.getElementById("world").style.display = 'none';
     document.getElementById("country").style.display = 'none';
     document.getElementById("continent").style.display = 'block';
-    document.getElementById("comparison").style.display = 'none';
   } else {
     document.getElementById("analytics_title").innerHTML = 'Country: ' + region;
     get_country_facts(region, ssp_type);
     document.getElementById("world").style.display = 'none';
     document.getElementById("continent").style.display = 'none';
     document.getElementById("country").style.display = 'block';
-    document.getElementById("comparison").style.display = 'none';
   }
-}
-
-function draw_compare_charts(climate_scenario, first_region, second_region, region_type) {
-  if (second_region == 'None') {
-    if (region_type == 'Continent') {
-      document.getElementById("analytics_title").innerHTML = first_region + ' - Select another continent';
-    } else {
-      document.getElementById("analytics_title").innerHTML = first_region + ' - Select another country';
-    }
-  } else {
-    document.getElementById("analytics_title").innerHTML = first_region + ' - ' + second_region;
-  }
-  document.getElementById("comparison").style.display = 'block';
-  document.getElementById("country").style.display = 'none';
-  document.getElementById("continent").style.display = 'none';
-  document.getElementById("world").style.display = 'none';
-  document.getElementById('facts').style.display = 'none';
 }
 
 function remove_charts() {
   document.getElementById("analytics_title").innerHTML = 'Select a region to view analytics';
-  document.getElementById("comparison").style.display = 'none';
   document.getElementById("country").style.display = 'none';
   document.getElementById("continent").style.display = 'none';
   document.getElementById("world").style.display = 'none';
   document.getElementById('facts').style.display = 'none';
 }
-
-function draw_piechart_by_continent(ssp_type, yvalues, chartdiv, ylabel) {
-  let chart = dc.pieChart(chartdiv);
-  d3.csv("../data/graph/graph_continent_data_" + ssp_type.toLowerCase() + ".csv").then(function(continents) {
-    continents.forEach(function(x) {
-      x[yvalues] = +x[yvalues];
-    });
-
-    let ndx = crossfilter(continents),
-      xaxis = ndx.dimension(function(d) {
-        var split = d.continent.split(' ');
-        if (split.length > 1) {
-          return split[0].substring(0,1) + split[1].substring(0,1)
-        }
-        return d.continent.substring(0,3).toUpperCase();
-      }),
-      yaxis = xaxis
-      .group().reduceSum(function(d) {
-        return d[yvalues];
-      });
-    chart
-      .width(window.innerWidth / 6)
-      .height(window.innerHeight / 6)
-      .dimension(xaxis)
-      .group(yaxis)
-      .on('renderlet', function(chart) {
-        chart.selectAll('rect').on("click", function(d) {
-          console.log("click!", d);
-        });
-      });
-    chart.render();
-  });
-}
-
 
 function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, short_labels) {
   let chart = dc.barChart(chartdiv);
@@ -510,7 +365,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
       xaxis = ndx.dimension(function(d) {
         var split = d.continent.split(' ');
         if (split.length > 1 && short_labels) {
-          return split[0].substring(0,1) + '. ' +split[1].substring(0,1) + '. ';
+          return split[0].substring(0,1) + '. ' + split[1];
         }
         return d.continent;
       }),
@@ -524,7 +379,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
       .x(d3.scaleBand())
       .xUnits(dc.units.ordinal)
       .colors(d3.scaleOrdinal().domain(["positive", "negative"])
-        .range(["green", "red"]))
+        .range(["#66A64F", "#C11432"]))
       .colorAccessor(function(d) {
         if (d.value > 0) {
           return "positive";
@@ -532,7 +387,6 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
         return "negative";
       })
       .brushOn(false)
-      .xAxisLabel("Continent")
       .yAxisLabel(ylabel)
       .dimension(xaxis)
       .group(yaxis)
@@ -595,37 +449,40 @@ whenDocumentLoaded(() => {
   const map = new Map();
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
-  let ssp_slider = document.getElementById("ssp_range");
-  ssp_slider.oninput = function() {
+  let dropdown_scenario = document.getElementById("select_rcp");
+  dropdown_scenario.onchange = function() {
     let ssp_nb = this.value;
     let ssp_type = 'SSP' + ssp_nb;
-    if (!map.compare_mode) {
-      updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
-    } else {
-      updateBothData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv',
-                     'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.compare_region + '.csv',
-                     map.region, map.compare_region, map.region_type, ssp_type)
-    }
+    updateData(map, 'data/2050/SSP' + ssp_nb + '/SSP' + ssp_nb + '_' + map.region + '.csv', map.region, map.region_type, ssp_type)
   }
 
   let data = [];
 
   d3.csv("data/2050/SSP1/SSP1_World.csv", function(csv) {
+
+      let population = csv['Population 2050']
+      let requirement = population * 365 * 2355000
+      let calories = csv['Calories 2050']
+      let sufficiency = 100
+      if (requirement > 0) {
+        sufficiency = 100 * calories / requirement
+      }
+
       let change_in_prod = parseFloat(csv.percent_change_in_production)
       if (isNaN(change_in_prod)) {
         change_in_prod = Number.MAX_VALUE
       }
-
       data.push({
         "min_lon": (+csv.min_lon),
         "max_lon": (+csv.max_lon),
         "min_lat": -(+csv.min_lat),
         "max_lat": -(+csv.max_lat),
-        "ΔCalories": (+csv.ΔCalories),
+        "sufficiency": sufficiency,
         "percent_change_in_production": change_in_prod
       });
     })
     .then(() => {
+      console.log(data)
       background.then(world => {
         map.land.append('path')
           .datum(topojson.merge(world, world.objects.countries.geometries))
@@ -671,22 +528,6 @@ whenDocumentLoaded(() => {
               }
 
               if (region_found && !remove_region) {
-                if (map.compare_mode) {
-                  if (map.region_type == 'Continent') {
-                    if (countries_to_continent[key] != map.compare_region) {
-                      updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[key] + ".csv", countries_to_continent[key], 'Continent', map.climate_scenario)
-                    } else {
-                      map.clear_data()
-                    }
-                  } else {
-                    if (key != map.compare_region) {
-                      updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
-                    } else {
-                      map.clear_data()
-                    }
-                  }
-                }
-                else {
                   // We show the continent either if we currently have a global view or a view on another continent
                   if (map.region_type == 'None' || map.region_type == 'Global' ||
                     (map.region_type == 'Continent' && countries_to_continent[key] != map.region) ||
@@ -695,14 +536,13 @@ whenDocumentLoaded(() => {
                   } else {
                     updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + key + ".csv", key, 'Country', map.climate_scenario)
                   }
-                }
               }
               break
             }
           }
         }
 
-        if (!region_found && !map.compare_mode) {
+        if (!region_found) {
           if (map.region_type == 'Country') {
             updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + countries_to_continent[map.region] + ".csv", countries_to_continent[map.region], 'Continent', map.climate_scenario)
           } else if (map.region_type == 'Continent' || map.region_type == 'None') {
@@ -779,42 +619,6 @@ whenDocumentLoaded(() => {
           .style('left', (d3.min([d3.mouse(this)[0] + 20, window.innerWidth - dims.width - 5])) + 'px')
           .style('top', (d3.max([d3.mouse(this)[1] - 40, 5])) + 'px')
       })
-
-      const analytics_button = d3.select('#analytics_mode')
-      const compare_button = d3.select('#compare_mode')
-      compare_button.style('color', 'white')
-
-      analytics_button.on('click', function(d, i) {
-        if (map.compare_mode) {
-          map.clear_data()
-          map.compare_mode = false
-          compare_button.style('background-color', '#2E2E2E')
-          compare_button.style('color', 'white')
-          analytics_button.style('background-color', 'white')
-          analytics_button.style('color', '#2E2E2E')
-          draw_charts(map.climate_scenario, map.region, map.region_type)
-        }
-      })
-
-      compare_button.on('click', function(d, i) {
-        if (!map.compare_mode && map.region_type != 'Global' && map.region_type != 'None') {
-          map.compare_mode = true
-          compare_button.style('background-color', 'white')
-          compare_button.style('color', '#2E2E2E')
-          analytics_button.style('background-color', '#2E2E2E')
-          analytics_button.style('color', 'white')
-          draw_compare_charts(map.climate_scenario, map.region, map.compare_region, map.region_type)
-        }
-      })
-
-      const swap_regions_button = d3.select('#swap_regions')
-      swap_regions_button.style('color', 'white')
-
-      swap_regions_button.on('click', function(d, i) {
-        if (map.compare_mode && map.compare_region != 'None') {
-          map.switch_data()
-        }
-      })
     });
 
   function zoomed() {
@@ -838,29 +642,5 @@ whenDocumentLoaded(() => {
     .on('zoom', zoomed);
 
   map.svg.call(zoom);
-
-  $("#right_panel").click(function() {
-    let id = $(this).attr("href").substring(1);
-    $("html, body").animate({
-      scrollTop: $("#" + id).offset().top
-    }, 1000, function() {
-      $("#right_panel").slideReveal("hide");
-    });
-  });
-
-  let slider = $("#right_panel").slideReveal({
-    // width: 100,
-    push: false,
-    position: "right",
-    // speed: 600,
-    trigger: $(".handle"),
-    // autoEscape: false,
-    shown: function(obj) {
-      obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-right"></span>');
-    },
-    hidden: function(obj) {
-      obj.find(".handle").html('<span class="glyphicon glyphicon-chevron-left"></span>');
-    }
-  });
 
 });
