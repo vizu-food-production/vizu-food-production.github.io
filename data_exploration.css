@@ -172,6 +172,7 @@ p {
 	 padding-bottom: 20px;
 	 margin-top: 40px;
 	 margin-bottom: 40px;
+	 overflow: visible;
  }
 
  .inline_map {
@@ -179,7 +180,11 @@ p {
  }
 
  .axis .tick text {
-	 font-size: 1.3rem;
+	 font-size: 1.5rem;
+ }
+
+ #chart2 .x.axis text {
+    transform: rotate(-10deg);
  }
 
  #variation_legend, #sustainability_legend {
@@ -248,6 +253,7 @@ p {
 
  svg {
  	margin-bottom: 1rem;
+	overflow: visible;
  }
 
  .beige {

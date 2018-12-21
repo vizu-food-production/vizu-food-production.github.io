@@ -136,7 +136,11 @@ body {
 }
 
 .axis .tick text {
-	font-size: 1.3rem;
+	font-size: 1.5rem;
+}
+
+#chart1 .x.axis text, #chart2 .x.axis text {
+	 transform: rotate(-10deg);
 }
 
 #analytics_container {
