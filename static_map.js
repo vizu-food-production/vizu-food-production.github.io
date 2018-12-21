@@ -115,6 +115,7 @@ function add_strories(map) {
     triggerElement: legendTrigger,
     offset: -200
   })
+  .addIndicators({colorStart:"rgba(250, 250, 250, 0)", colorTrigger:"rgba(40, 40, 40, 0)", colorEnd:"rgba(0,0,0,0)"})
   .addTo(controller)
   .on("enter leave", function(e) {
     if (e.type == "enter") {
