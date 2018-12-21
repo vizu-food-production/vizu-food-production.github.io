@@ -1,4 +1,3 @@
-
 function whenDocumentLoaded(action) {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", action);
@@ -15,8 +14,51 @@ var controller = new ScrollMagic.Controller({
 
 
 
+function add_strories(map) {
 
-
+  let story_actions = [{
+      'story': 'story1',
+      'action': true,
+      'scenario': 'SSP1',
+      'region_type': 'Global',
+      'region': 'World'
+    },
+    {
+      'story': 'story2',
+      'action': true,
+      'scenario': 'SSP5',
+      'region_type': 'Global',
+      'region': 'World'
+    },
+    {
+      'story': 'story4',
+      'action': true,
+      'scenario': 'SSP1',
+      'region_type': 'Continent',
+      'region': 'Africa'
+    },
+    {
+      'story': 'story5',
+      'action': true,
+      'scenario': 'SSP5',
+      'region_type': 'Continent',
+      'region': 'Africa'
+    },
+    {
+      'story': 'story7',
+      'action': true,
+      'scenario': 'SSP1',
+      'region_type': 'Country',
+      'region': 'United Republic of Tanzania'
+    },
+    {
+      'story': 'story8',
+      'action': true,
+      'scenario': 'SSP5',
+      'region_type': 'Country',
+      'region': 'United Republic of Tanzania'
+    },
+  ]
 
 function add_strories(map) {
 
@@ -54,22 +96,11 @@ function add_strories(map) {
       }
     });
 
-  story = document.getElementById("story2");
-  new ScrollMagic.Scene({
-      triggerElement: story
-    })
-    .addIndicators() // add indicators (requires plugin)
-    .addTo(controller)
-    .on("enter leave", function(e) {
-      if (e.type == "enter") {
-        continent = "Africa"
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + continent +".csv", continent, 'Continent', map.climate_scenario)
-      } else {
-        updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + "World" + ".csv", "World", "World", map.climate_scenario)
-      }
-    });
-
-    story = document.getElementById("story3");
+  // create scene for every slide
+  for (var i = 1; i < story_actions.length; i++) {
+    let current_story = story_actions[i]
+    let previous_story = story_actions[i - 1]
+    let story = document.getElementById(current_story.story);
     new ScrollMagic.Scene({
         triggerElement: story
       })
@@ -77,22 +108,13 @@ function add_strories(map) {
       .addTo(controller)
       .on("enter leave", function(e) {
         if (e.type == "enter") {
-          updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + "Nigeria" + ".csv", "Nigeria", "Country", map.climate_scenario)
+          updateData(map, "data/2050/" + current_story.scenario + "/" + current_story.scenario + "_" + current_story.region + ".csv", current_story.region_type, current_story.region, current_story.scenario)
 
         } else {
-          updateData(map, "data/2050/" + map.climate_scenario + "/" + map.climate_scenario + "_" + continent +".csv", continent, 'Continent', map.climate_scenario)
+          updateData(map, "data/2050/" + previous_story.scenario + "/" + previous_story.scenario + "_" + previous_story.region + ".csv", previous_story.region_type, previous_story.region, previous_story.scenario)
         }
       });
-
-    var slides = document.querySelectorAll(".spacer");
-    // create scene for every slide
-    for (var i = 0; i < slides.length; i++) {
-      new ScrollMagic.Scene({
-          triggerElement: slides[i]
-        })
-        .addIndicators() // add indicators (requires plugin)
-        .addTo(controller);
-    }
+  }
 }
 
 function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, short_labels) {
@@ -106,7 +128,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
       xaxis = ndx.dimension(function(d) {
         var split = d.continent.split(' ');
         if (split.length > 1 && short_labels) {
-          return split[0].substring(0,1) + '. ' + split[1];
+          return split[0].substring(0, 1) + '. ' + split[1];
         }
         return d.continent;
       }),
@@ -349,7 +371,13 @@ class Map {
         context.projection([d.min_lon, d.max_lat])[0] + ',' + context.projection([d.min_lon, d.max_lat])[1] + ' ' +
         context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
         context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
-      .style('fill', d => { if (this.metric == 'Variation') { return colorScale(d.percent_change_in_production) } else { return colorScale(d.sufficiency) } })
+      .style('fill', d => {
+        if (this.metric == 'Variation') {
+          return colorScale(d.percent_change_in_production)
+        } else {
+          return colorScale(d.sufficiency)
+        }
+      })
       .attr('transform', context.transform)
       .attr('opacity', 0)
       .transition()
@@ -364,7 +392,13 @@ class Map {
         context.projection([d.max_lon, d.max_lat])[0] + ',' + context.projection([d.max_lon, d.max_lat])[1] + ' ' +
         context.projection([d.max_lon, d.min_lat])[0] + ',' + context.projection([d.max_lon, d.min_lat])[1])
       .attr('transform', context.transform)
-      .style('fill', d => { if (this.metric == 'Variation') { return colorScale(d.percent_change_in_production) } else { return colorScale(d.sufficiency) } });
+      .style('fill', d => {
+        if (this.metric == 'Variation') {
+          return colorScale(d.percent_change_in_production)
+        } else {
+          return colorScale(d.sufficiency)
+        }
+      });
 
     dataPoints
       .exit()
@@ -382,8 +416,7 @@ class Map {
       colorScale.clamp(true)
 
       return colorScale;
-    }
-    else {
+    } else {
       const colorScale = d3.scaleLinear()
         .domain([0, 50, 100])
         .range(['#F7D708', '#9CCF31', '#009ECE'])
@@ -404,7 +437,13 @@ class Map {
       dataPoints
         .transition()
         .duration(1000)
-        .style('fill', d => { if (metric == 'Variation') { return colorScale(d.percent_change_in_production) } else { return colorScale(d.sufficiency) } });
+        .style('fill', d => {
+          if (metric == 'Variation') {
+            return colorScale(d.percent_change_in_production)
+          } else {
+            return colorScale(d.sufficiency)
+          }
+        });
     }
   }
 
@@ -418,8 +457,8 @@ class Map {
 function get_story_legend(metric, color_scale) {
   if (metric == 'Variation') {
     let legendLinear = d3.legendColor()
-      .shapeWidth(window.innerWidth/40)
-      .shapeHeight(window.innerHeight/100)
+      .shapeWidth(window.innerWidth / 40)
+      .shapeHeight(window.innerHeight / 100)
       .title("Predicted percent change in calory production between 2000 and 2050 (%)")
       .orient('horizontal')
       .cells([-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100])
