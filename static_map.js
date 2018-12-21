@@ -89,7 +89,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
       xaxis = ndx.dimension(function(d) {
         var split = d.continent.split(' ');
         if (split.length > 1 && short_labels) {
-          return split[0].substring(0,1) + '. ' +split[1].substring(0,1) + '. ';
+          return split[0].substring(0,1) + '. ' + split[1];
         }
         return d.continent;
       }),
@@ -103,7 +103,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
       .x(d3.scaleBand())
       .xUnits(dc.units.ordinal)
       .colors(d3.scaleOrdinal().domain(["positive", "negative"])
-        .range(["green", "red"]))
+        .range(["#66A64F", "#C11432"]))
       .colorAccessor(function(d) {
         if (d.value > 0) {
           return "positive";
@@ -111,7 +111,6 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
         return "negative";
       })
       .brushOn(false)
-      .xAxisLabel("Continent")
       .yAxisLabel(ylabel)
       .dimension(xaxis)
       .group(yaxis)
@@ -127,7 +126,7 @@ function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, s
 }
 
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
-  draw_barchart_by_continent(climate_scenario, 'diffCalories', "#chart2", "Variation (%)", 1, false)
+  draw_barchart_by_continent(climate_scenario, 'diffCalories', "#chart2", "Variation (%)", 1, true)
   let data = []
   d3.csv(path_to_data, function(csv) {
 
@@ -328,7 +327,7 @@ class Map {
     if (metric == 'Variation') {
       const colorScale = d3.scaleLinear()
         .domain([-100, 0, 100])
-        .range(['red', 'yellow', 'green'])
+        .range(['#C11432', 'yellow', '#66A64F'])
       colorScale.clamp(true)
 
       return colorScale;
