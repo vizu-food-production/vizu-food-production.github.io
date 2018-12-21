@@ -115,7 +115,6 @@ function add_strories(map) {
     triggerElement: legendTrigger,
     offset: -200
   })
-  .addIndicators()
   .addTo(controller)
   .on("enter leave", function(e) {
     if (e.type == "enter") {
@@ -130,7 +129,6 @@ function add_strories(map) {
     triggerElement: variationLegend,
     offset: 100
   })
-  .addIndicators()
   .addTo(controller)
   .on("enter leave", function(e) {
     if (e.type == "enter") {
@@ -144,7 +142,6 @@ function add_strories(map) {
   new ScrollMagic.Scene({
     triggerElement: sustainabilityTrigger
   })
-  .addIndicators()
   .addTo(controller)
   .on("enter leave", function(e) {
     if (e.type == "enter") {
@@ -159,7 +156,6 @@ function add_strories(map) {
     triggerElement: sustainabilityLegend,
     offset: 100
   })
-  .addIndicators()
   .addTo(controller)
   .on("enter leave", function(e) {
     if (e.type == "enter") {
@@ -173,7 +169,6 @@ function add_strories(map) {
   new ScrollMagic.Scene({
       triggerElement: story
     })
-    .addIndicators() // add indicators (requires plugin)
     .addTo(controller)
     .on("enter leave", function(e) {
       let map_div = document.getElementById("map");
@@ -192,9 +187,9 @@ function add_strories(map) {
     let previous_story = story_actions[i - 1]
     let story = document.getElementById(current_story.story);
     new ScrollMagic.Scene({
-        triggerElement: story
+        triggerElement: story,
+        offset: -200
       })
-      .addIndicators() // add indicators (requires plugin)
       .addTo(controller)
       .on("enter leave", function(e) {
         if (e.type == "enter") {
