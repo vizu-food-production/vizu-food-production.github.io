@@ -226,13 +226,6 @@ input[type=submit] {
  	height: 100%
  }
 
- .spacer {
- 	height: 100%;
- 	width: 100%;
-	padding-top: 40px;
-	font-size: 18px;
- }
-
  .story_block {
 	 padding-left: 40px;
  	 padding-right: 40px;
