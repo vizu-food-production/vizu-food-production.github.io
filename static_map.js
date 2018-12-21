@@ -88,6 +88,20 @@ function add_strories(map) {
     }
   ]
 
+  let variationLegend = document.getElementById("variation_legend");
+  new ScrollMagic.Scene({
+    triggerElement: variationLegend,
+    offset: 100
+  })
+  .addIndicators()
+  .addTo(controller)
+  .on("enter leave", function(e) {
+    if (e.type == "enter") {
+      map.delete_rays()
+    } else {
+      map.create_rays('Variation')
+    }
+  });
 
   var story = document.getElementById("story1");
   new ScrollMagic.Scene({
@@ -98,10 +112,12 @@ function add_strories(map) {
     .on("enter leave", function(e) {
       let map_div = document.getElementById("map");
       if (e.type == "enter") {
+        map.create_rays('Variation')
         map_div.style.top = "0px";
         map_div.style.position = "fixed";
 
       } else {
+        map.delete_rays()
         map_div.style.position = "relative";
       }
     });
@@ -271,6 +287,40 @@ class Map {
         'k': 8
       }
     }
+  }
+
+  create_ray(color, x2, y2) {
+    this.circles.append('line')
+      .style("stroke", color)
+      .attr("x1", window.innerWidth * 0.67)
+      .attr("y1", 0)
+      .attr("x2", window.innerWidth * 0.67)
+      .attr("y2", 0)
+      .transition()
+      .duration(2000)
+      .attr("x2", x2)
+      .attr("y2", y2)
+  }
+
+  create_rays(metric) {
+    if (metric == 'Variation') {
+      let dest_red = this.projection([-83.93994167, 38.14838083])
+      let x2_red = dest_red[0], y2_red = dest_red[1]
+      let dest_yellow = this.projection([144.63281035, -35.66086593])
+      let x2_yellow = dest_yellow[0], y2_yellow = dest_yellow[1]
+      let dest_green = this.projection([58.21435466, 26.91423323])
+      let x2_green = dest_green[0], y2_green = dest_green[1]
+
+      this.create_ray("#66A64F", x2_green, y2_green)
+      this.create_ray("#C11432", x2_red, y2_red)
+      this.create_ray("#FDD10A", x2_yellow, y2_yellow)
+    } else {
+
+    }
+  }
+
+  delete_rays() {
+    this.circles.selectAll('line').remove();
   }
 
   get_legend(metric, color_scale) {
