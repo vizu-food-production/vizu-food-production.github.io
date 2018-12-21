@@ -50,7 +50,9 @@ body {
 	line-height: 2;
 }
 
-
+p {
+	padding: 7px;
+}
 
 #header {
 	width: 100%;
