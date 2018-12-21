@@ -419,7 +419,7 @@ class Map {
       let legendLinear = d3.legendColor()
         .shapeWidth(window.innerWidth / 40)
         .shapeHeight(window.innerWidth / 50)
-        .title("Predicted sustainability in 2050 (%)")
+        .title("Predicted food sufficiency in 2050 (%)")
         .orient('horizontal')
         .cells([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
         .scale(color_scale);
@@ -587,7 +587,7 @@ function get_story_legend(metric, color_scale) {
     let legendLinear = d3.legendColor()
       .shapeWidth(window.innerWidth / 40)
       .shapeHeight(window.innerWidth / 100)
-      .title("Predicted sustainability in 2050 (%)")
+      .title("Predicted food sufficiency in 2050 (%)")
       .orient('horizontal')
       .cells([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
       .scale(color_scale);
