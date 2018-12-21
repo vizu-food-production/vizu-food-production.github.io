@@ -570,6 +570,7 @@ whenDocumentLoaded(() => {
 
   add_strories(map);
   draw_story_legend(map, d3.select('#variation_legend'), 'Variation', map.get_color_scale('Variation'))
+  draw_story_legend(map, d3.select('#sustainability_legend'), 'Sustainability', map.get_color_scale('Sustainability'))
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
   updateData(map, "data/2050/SSP1/SSP1_World.csv", 'World', 'Global', 'SSP1')
