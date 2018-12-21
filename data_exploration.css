@@ -220,7 +220,7 @@ input[type=submit] {
 
  #right_panel {
  	width: 33% !important;
- 	background-color: rgb(70, 70, 80);
+ 	background-color: rgb(250, 250, 250);
  	color: black;
  	float: right;
  	height: 100%
@@ -246,21 +246,14 @@ input[type=submit] {
 	 font-size: 15px;
  }
 
+ #variation_legend {
+	width: 100%;
+	height: 100%;
+	background-color: rgb(250, 250, 250);
  }
 
  #story2 {
  	height: 50%;
- }
-
-
-
- #right_panel .handle{
- 	background-color: #2E2E2E;
- 	left: -30px;
- 	position: absolute;
- 	top: 40%;
- 	width: 30px;
- 	cursor: pointer;
  }
 
  #analytics_container {
@@ -309,6 +302,11 @@ input[type=submit] {
 
  .label, .legendTitle {
  	fill: white;
+ }
+
+ #variation_legend .label, #variation_legend .legendTitle {
+	fill: black;
+	font-size: 12px;
  }
 
 

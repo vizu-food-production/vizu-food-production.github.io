@@ -364,10 +364,48 @@ class Map {
   }
 }
 
+function get_story_legend(metric, color_scale) {
+  if (metric == 'Variation') {
+    let legendLinear = d3.legendColor()
+      .shapeWidth(window.innerWidth/40)
+      .shapeHeight(window.innerHeight/100)
+      .title("Predicted percent change in calory production between 2000 and 2050 (%)")
+      .orient('horizontal')
+      .cells([-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100])
+      .scale(color_scale);
+
+    return legendLinear;
+  } else {
+    let legendLinear = d3.legendColor()
+      .shapeWidth(window.innerWidth / 37)
+      .shapeHeight(window.innerWidth / 50)
+      .title("Predicted percent change in calory production between 2000 and 2050 (%)")
+      .orient('horizontal')
+      .cells([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+      .scale(color_scale);
+
+    return legendLinear;
+  }
+}
+
+function draw_story_legend(map, svg, metric, color_scale) {
+  svg.selectAll(".legendLinear").remove()
+
+  svg.append("g")
+    .attr("class", "legendLinear")
+    .attr("transform", "translate(0,25)")
+
+  let legendLinear = get_story_legend(metric, color_scale)
+
+  svg.select(".legendLinear")
+    .call(legendLinear);
+}
+
 whenDocumentLoaded(() => {
   const map = new Map();
 
   add_strories(map);
+  draw_story_legend(map, d3.select('#variation_legend'), 'Variation', map.get_color_scale('Variation'))
   const background = d3.json('https://unpkg.com/world-atlas@1.1.4/world/110m.json');
 
   updateData(map, "data/2050/SSP1/SSP1_World.csv", 'World', 'Global', 'SSP1')
