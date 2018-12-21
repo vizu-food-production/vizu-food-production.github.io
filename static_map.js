@@ -264,6 +264,7 @@ class Map {
     this.land = this.svg.select('#container').append('g');
     this.circles = this.svg.select('#container').append('g');
     this.boundaries = this.svg.select('#container').append('g');
+    this.rays = this.svg.select('#container').append('g')
     this.transform = d3.zoomIdentity
     this.climate_scenario = 'SSP1'
     this.region = 'World'
@@ -317,7 +318,7 @@ class Map {
   }
 
   create_ray(color, x2, y2) {
-    this.circles.append('line')
+    this.rays.append('line')
       .style("stroke", color)
       .attr("x1", window.innerWidth * 0.67)
       .attr("y1", 80)
@@ -356,7 +357,7 @@ class Map {
   }
 
   delete_rays() {
-    this.circles.selectAll('line').remove();
+    this.rays.selectAll('line').remove();
   }
 
   get_legend(metric, color_scale) {
