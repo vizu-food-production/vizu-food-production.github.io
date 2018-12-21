@@ -292,8 +292,9 @@ function get_country_facts(country, ssp_type) {
   d3.csv("../data/graph/graph_country_data_" + ssp_type.toLowerCase() + ".csv").then(function(countries) {
     countries.forEach(function(x) {
       if (x.country == country) {
+        console.log(x);
         document.getElementById('facts').style.display = 'block';
-        document.getElementById("facts").innerHTML = '<li>Population in year 2000: ' + Math.round(x.Population_2000 / 1000000) + ' million</li><li>Predicted population in 2050: ' + Math.round(x.Population_2050 / 1000000) + ' million</li><li>Variation in calories production between 2000 and 2050: ' + Math.round(x['ΔCalories']) + '%</li><li>Food sufficiency in 2050: ' + Math.round(x.Sufficiency_2050) + '%</li>';
+        document.getElementById("facts").innerHTML = '<li>Population in year 2000: ' + Math.round(x['Population 2000'] / 1000000) + ' million</li><li>Predicted population in 2050: ' + Math.round(x['Population 2050'] / 1000000) + ' million</li><li>Variation in calories production between 2000 and 2050: ' + Math.round(x['ΔCalories (%)']) + '%</li><li>Food sufficiency in 2050: ' + Math.round(x['Sufficiency (%) 2050']) + '%</li>';
       }
     });
   });
