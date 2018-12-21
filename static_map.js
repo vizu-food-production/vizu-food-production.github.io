@@ -411,7 +411,7 @@ class Map {
   get_legend(metric, color_scale) {
     if (metric == 'Variation') {
       let legendLinear = d3.legendColor()
-        .shapeWidth(window.innerWidth / 37)
+        .shapeWidth(window.innerWidth / 40)
         .shapeHeight(window.innerWidth / 50)
         .title("Predicted percent change in calory production between 2000 and 2050 (%)")
         .orient('horizontal')
@@ -421,7 +421,7 @@ class Map {
       return legendLinear;
     } else {
       let legendLinear = d3.legendColor()
-        .shapeWidth(window.innerWidth / 37)
+        .shapeWidth(window.innerWidth / 40)
         .shapeHeight(window.innerWidth / 50)
         .title("Predicted sustainability in 2050 (%)")
         .orient('horizontal')

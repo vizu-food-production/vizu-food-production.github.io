@@ -16,6 +16,8 @@ function whenDocumentLoaded(action) {
 }
 
 function updateData(map, path_to_data, region, region_type, climate_scenario) {
+  draw_charts(climate_scenario, region, region_type)
+
   let data = []
   d3.csv(path_to_data, function(csv) {
 
@@ -47,7 +49,7 @@ function updateData(map, path_to_data, region, region_type, climate_scenario) {
 
 class Map {
   constructor() {
-    this.width = window.innerWidth * 0.66;
+    this.width = window.innerWidth * 0.67;
     this.height = window.innerHeight;
     this.projection = d3.geoWinkel3()
       .translate([4 * this.width / 9, this.height / 1.8])
@@ -344,14 +346,6 @@ function draw_charts(ssp_type, region, region_type) {
     document.getElementById("continent").style.display = 'none';
     document.getElementById("country").style.display = 'block';
   }
-}
-
-function remove_charts() {
-  document.getElementById("analytics_title").innerHTML = 'Select a region to view analytics';
-  document.getElementById("country").style.display = 'none';
-  document.getElementById("continent").style.display = 'none';
-  document.getElementById("world").style.display = 'none';
-  document.getElementById('facts').style.display = 'none';
 }
 
 function draw_barchart_by_continent(ssp_type, yvalues, chartdiv, ylabel, size, short_labels) {
