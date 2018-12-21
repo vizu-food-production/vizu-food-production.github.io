@@ -18,46 +18,74 @@ function add_strories(map) {
 
   let story_actions = [{
       'story': 'story1',
-      'action': true,
       'scenario': 'SSP1',
       'region_type': 'Global',
-      'region': 'World'
+      'region': 'World',
+      'displayed_metric': 'Variation'
     },
     {
       'story': 'story2',
-      'action': true,
       'scenario': 'SSP5',
       'region_type': 'Global',
-      'region': 'World'
+      'region': 'World',
+      'displayed_metric': 'Variation'
     },
     {
       'story': 'story4',
-      'action': true,
       'scenario': 'SSP1',
       'region_type': 'Continent',
-      'region': 'Africa'
+      'region': 'Africa',
+      'displayed_metric': 'Variation'
     },
     {
       'story': 'story5',
-      'action': true,
       'scenario': 'SSP5',
       'region_type': 'Continent',
-      'region': 'Africa'
+      'region': 'Africa',
+      'displayed_metric': 'Variation'
     },
     {
       'story': 'story7',
-      'action': true,
       'scenario': 'SSP1',
       'region_type': 'Country',
-      'region': 'United Republic of Tanzania'
+      'region': 'United Republic of Tanzania',
+      'displayed_metric': 'Variation'
     },
     {
       'story': 'story8',
-      'action': true,
       'scenario': 'SSP5',
       'region_type': 'Country',
-      'region': 'United Republic of Tanzania'
+      'region': 'United Republic of Tanzania',
+      'displayed_metric': 'Variation'
     },
+    {
+      'story': 'story10',
+      'scenario': 'SSP1',
+      'region_type': 'Global',
+      'region': 'World',
+      'displayed_metric': 'sustainability'
+    },
+    {
+      'story': 'story11',
+      'scenario': 'SSP5',
+      'region_type': 'Global',
+      'region': 'World',
+      'displayed_metric': 'sustainability'
+    },
+    {
+      'story': 'story12',
+      'scenario': 'SSP1',
+      'region_type': 'Continent',
+      'region': 'Africa',
+      'displayed_metric': 'sustainability'
+    },
+    {
+      'story': 'story13',
+      'scenario': 'SSP5',
+      'region_type': 'Continent',
+      'region': 'Africa',
+      'displayed_metric': 'sustainability'
+    }
   ]
 
 
@@ -90,10 +118,11 @@ function add_strories(map) {
       .addTo(controller)
       .on("enter leave", function(e) {
         if (e.type == "enter") {
-          updateData(map, "data/2050/" + current_story.scenario + "/" + current_story.scenario + "_" + current_story.region + ".csv", current_story.region_type, current_story.region, current_story.scenario)
-
+          updateData(map, "data/2050/" + current_story.scenario + "/" + current_story.scenario + "_" + current_story.region + ".csv", current_story.region, current_story.region_type, current_story.scenario);
+          map.change_displayed_metric(current_story.displayed_metric)
         } else {
-          updateData(map, "data/2050/" + previous_story.scenario + "/" + previous_story.scenario + "_" + previous_story.region + ".csv", previous_story.region_type, previous_story.region, previous_story.scenario)
+          updateData(map, "data/2050/" + previous_story.scenario + "/" + previous_story.scenario + "_" + previous_story.region + ".csv", previous_story.region, previous_story.region_type, previous_story.scenario);
+          map.change_displayed_metric(previous_story.displayed_metric)
         }
       });
   }
@@ -235,6 +264,11 @@ class Map {
         'x': -2.649 * this.projection([147.18, -25.378])[0] + this.width / 2,
         'y': -2.649 * this.projection([147.18, -25.378])[1] + this.height / 2,
         'k': 2.649
+      },
+      'United Republic of Tanzania': {
+        'x': -8 * this.projection([34.121748, -5.618946])[0] + this.width / 2,
+        'y': -8 * this.projection([34.121748, -5.618946])[1] + this.height / 2,
+        'k': 8
       }
     }
   }
@@ -282,6 +316,7 @@ class Map {
   }
 
   display_data(data, region, region_type, climate_scenario) {
+
     this.main_data = data
 
     const context = this;
@@ -291,8 +326,9 @@ class Map {
     this.draw_legend(this.metric, colorScale)
 
     let dataPoints = this.circles.selectAll('polygon').data(data, d => d.min_lon.toString() + "," + d.min_lat.toString());
-
-    if ((region_type == 'Continent' || region_type == 'Global') && (region_type != this.region_type || region != this.region)) {
+    console.log('region', region, 'region_type', region_type)
+    if (region in this.predefined_zoom_levels) {
+      console.log('ZOOOm')
       let zoom_level = this.predefined_zoom_levels[region]
       this.zoom_on_continent(zoom_level['x'], zoom_level['y'], zoom_level['k'])
 
@@ -375,6 +411,7 @@ class Map {
   }
 
   change_displayed_metric(metric) {
+    console.log(metric, this.metric)
     if (metric != this.metric) {
       this.metric = metric
 
