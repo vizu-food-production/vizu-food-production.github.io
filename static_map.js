@@ -88,6 +88,21 @@ function add_strories(map) {
     }
   ]
 
+  let legendTrigger = document.getElementById("scenario_choice");
+  new ScrollMagic.Scene({
+    triggerElement: legendTrigger,
+    offset: -200
+  })
+  .addIndicators()
+  .addTo(controller)
+  .on("enter leave", function(e) {
+    if (e.type == "enter") {
+      map.create_rays('Variation')
+    } else {
+      map.delete_rays()
+    }
+  });
+
   let variationLegend = document.getElementById("variation_legend");
   new ScrollMagic.Scene({
     triggerElement: variationLegend,
@@ -103,7 +118,7 @@ function add_strories(map) {
     }
   });
 
-  var story = document.getElementById("story1");
+  var story = document.getElementById("right_panel");
   new ScrollMagic.Scene({
       triggerElement: story
     })
@@ -112,12 +127,10 @@ function add_strories(map) {
     .on("enter leave", function(e) {
       let map_div = document.getElementById("map");
       if (e.type == "enter") {
-        map.create_rays('Variation')
         map_div.style.top = "0px";
         map_div.style.position = "fixed";
 
       } else {
-        map.delete_rays()
         map_div.style.position = "relative";
       }
     });
