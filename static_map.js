@@ -297,7 +297,7 @@ class Map {
       .attr("x2", window.innerWidth * 0.67)
       .attr("y2", 0)
       .transition()
-      .duration(2000)
+      .duration(1000)
       .attr("x2", x2)
       .attr("y2", y2)
   }
