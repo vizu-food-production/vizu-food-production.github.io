@@ -128,7 +128,7 @@ class Map {
     this.climate_scenario = 'SSP1'
     this.region = 'World'
     this.region_type = 'Global'
-    this.metric = 'Sufficiency'
+    this.metric = 'Variation'
 
     this.main_data = []
 
