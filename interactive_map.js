@@ -552,6 +552,17 @@ whenDocumentLoaded(() => {
         }
       })
 
+      d3.select("#right_panel")
+        .on("mousemove", function(d, i) {
+          let box = d3.select('#mouse_region')
+          box.style('opacity', 0)
+        })
+      d3.select("#header")
+        .on("mousemove", function(d, i) {
+          let box = d3.select('#mouse_region')
+          box.style('opacity', 0)
+        })
+
       map.svg.on("mousemove", function(d, i) {
         coord = d3.mouse(this)
         coord[0] = (coord[0] - map.transform.x) / map.transform.k
