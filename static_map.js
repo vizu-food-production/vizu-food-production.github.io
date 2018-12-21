@@ -59,7 +59,7 @@ function add_strories(map) {
       'displayed_metric': 'Variation'
     },
     {
-      'story': 'story10',
+      'story': 'intro_sustainability',
       'scenario': 'SSP1',
       'region_type': 'Global',
       'region': 'World',
@@ -118,7 +118,21 @@ function add_strories(map) {
     }
   });
 
-  var story = document.getElementById("right_panel");
+  let sustainabilityTrigger = document.getElementById("intro_sustainability");
+  new ScrollMagic.Scene({
+    triggerElement: sustainabilityTrigger
+  })
+  .addIndicators()
+  .addTo(controller)
+  .on("enter leave", function(e) {
+    if (e.type == "enter") {
+      map.create_rays('Sustainability')
+    } else {
+      map.delete_rays()
+    }
+  })
+
+  let story = document.getElementById("right_panel");
   new ScrollMagic.Scene({
       triggerElement: story
     })
@@ -136,7 +150,7 @@ function add_strories(map) {
     });
 
   // create scene for every slide
-  for (var i = 1; i < story_actions.length; i++) {
+  for (let i = 1; i < story_actions.length; i++) {
     let current_story = story_actions[i]
     let previous_story = story_actions[i - 1]
     let story = document.getElementById(current_story.story);
@@ -328,7 +342,16 @@ class Map {
       this.create_ray("#C11432", x2_red, y2_red)
       this.create_ray("#FDD10A", x2_yellow, y2_yellow)
     } else {
+      let dest_yellow = this.projection([44.67919841, 14.48148942])
+      let x2_yellow = dest_yellow[0], y2_yellow = dest_yellow[1]
+      let dest_blue = this.projection([-106.59375429, 45.63248092])
+      let x2_blue = dest_blue[0], y2_blue = dest_blue[1]
+      let dest_green = this.projection([109.77758802, -7.40168956])
+      let x2_green = dest_green[0], y2_green = dest_green[1]
 
+      this.create_ray("#F7D708", x2_yellow, y2_yellow)
+      this.create_ray("#9CCF31", x2_blue, y2_blue)
+      this.create_ray("#004E64", x2_green, y2_green)
     }
   }
 
