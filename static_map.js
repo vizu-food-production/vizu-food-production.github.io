@@ -102,12 +102,12 @@ function add_strories(map) {
     }
     ,
     {
-      'story': 'intro_sustainability',
+      'story': 'story17',
       'scenario': 'SSP5',
       'region_type': 'Global',
       'region': 'World',
       'displayed_metric': 'sustainability'
-    }
+
   ]
 
   let legendTrigger = document.getElementById("scenario_choice");
