@@ -729,7 +729,7 @@ whenDocumentLoaded(() => {
       let population = csv['Population 2050']
       let requirement = population * 365 * 2355000
       let calories = csv['Calories 2050']
-      let sufficieny = 1
+      let sufficiency = 1
       if (requirement > 0) {
         sufficiency = calories / requirement
       }
