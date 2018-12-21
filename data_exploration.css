@@ -229,17 +229,23 @@ input[type=submit] {
  .spacer {
  	height: 100%;
  	width: 100%;
-	padding-left: 40px;
-	padding-right: 40px;
 	padding-top: 40px;
 	font-size: 18px;
  }
 
  .story_block {
+	 padding-left: 40px;
+ 	 padding-right: 40px;
 	 padding-top: 20px;
 	 padding-bottom: 20px;
 	 margin-top: 40px;
 	 margin-bottom: 40px;
+ }
+
+ .axis .tick text {
+	 font-size: 15px;
+ }
+
  }
 
  #story2 {
@@ -312,7 +318,9 @@ input[type=submit] {
 
  .beige {
 	 background-color: #f7f6f1;
-	 background-clip: padding-box;
+	 background-clip: border-box;
+	 border-bottom: 1px solid #d6d8d8;
+ 	 border-top: 1px solid #d6d8d8;
  }
  .blue {
  	background-color: #3883d8;
