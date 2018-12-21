@@ -466,7 +466,7 @@ class Map {
     } else {
       const colorScale = d3.scaleLinear()
         .domain([0, 50, 100])
-        .range(['#F7D708', '#9CCF31', '#009ECE'])
+        .range(['#F7D708', '#9CCF31', '#004E64'])
       colorScale.clamp(true)
 
       return colorScale;
