@@ -6,7 +6,7 @@
 
 <style>
     body {
-        font-size: 19px;
+        font-size: 11px;
     }
 
     text {
@@ -264,7 +264,7 @@
                 var mapBounds = leafletMap.getBounds();
                 var subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
                 console.log("subset: " + subset.length);
-                var MAX_NUMBER_OF_POINTS = 10000
+                var MAX_NUMBER_OF_POINTS = 15000
                 var proportion = MAX_NUMBER_OF_POINTS / Math.max(1,subset.length);
                 subset = subset.filter(function(d) { return Math.random() < proportion})
                 console.log("subset: " + subset.length);
