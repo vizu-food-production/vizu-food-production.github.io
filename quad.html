@@ -54,7 +54,7 @@
         var min_diff = 100;
         var max_diff = -100;
 
-        d3.csv('data/NewDataForStudents/2050_ssp1_he_SMALLER.csv', function (error, incidents) {
+        d3.csv('data/NewDataForStudents/2050_ssp1_he_SMALL.csv', function (error, incidents) {
 
             function reformat(array) {
                 var data = [];
@@ -66,7 +66,7 @@
                             coordinates: [+d.lon, -+d.lat],
                             type: "Point"
                         },
-                        diff: Math.sign(+d['ΔCalories']) * +d['Calories 2050'] / (+d['Calories 2050'] - +d['ΔCalories'] + 1) * 100,
+                        diff: Math.sign(+d['Δcal_per_ha']) * +d['cal_per_ha 2050'] / (+d['cal_per_ha 2050'] - +d['Δcal_per_ha'] + 1) * 100,
                         //diff: +d['Calories 2050']
                     };
                     data.push(p);
