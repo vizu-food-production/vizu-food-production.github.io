@@ -9,6 +9,7 @@
     body {
       font-size: 11px;
       overflow: hidden;
+      margin: 0px;
     }
 
     text {
@@ -57,7 +58,7 @@
     let min_diff = 100;
     let max_diff = -100;
 
-    let leafletMap = L.map('map').setView([20, -0], 3);
+    let leafletMap = L.map('map').setView([20, -0], 2.5);
 
     //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
