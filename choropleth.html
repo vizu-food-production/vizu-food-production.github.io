@@ -99,12 +99,12 @@
 
  // Colours used (uses parameters defined at start)
  function getColor(d) {
-    return d > legend5 ? colourmatrix[colour_scheme][5] :
-    d > legend4 ? colourmatrix[colour_scheme][4] :
-    d > legend3 ? colourmatrix[colour_scheme][3] :
-    d > legend2 ? colourmatrix[colour_scheme][2] :
-    d > legend1 ? colourmatrix[colour_scheme][1] :
-    d > legend0 ? colourmatrix[colour_scheme][0] :
+    return d >= legend5 ? colourmatrix[colour_scheme][5] :
+    d >= legend4 ? colourmatrix[colour_scheme][4] :
+    d >= legend3 ? colourmatrix[colour_scheme][3] :
+    d >= legend2 ? colourmatrix[colour_scheme][2] :
+    d >= legend1 ? colourmatrix[colour_scheme][1] :
+    d >= legend0 ? colourmatrix[colour_scheme][0] :
     'grey';
 }
 
