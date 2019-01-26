@@ -33,8 +33,8 @@
       height: 100%;
       width: 100%;
       background-color: #333;
-
     }
+
   </style>
 
 </head>
@@ -49,11 +49,23 @@
   <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="lib/pace.min.js"></script>
+  <link href="lib/style_loader.css" rel="stylesheet" />
 
 
   <script>
     let min_diff = 100;
     let max_diff = -100;
+
+    let leafletMap = L.map('map').setView([20, -0], 3);
+
+    //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(leafletMap);
+
 
     d3.csv('data/NewDataForStudents/2050_ssp1_he_cut2.csv', function(error, incidents) {
 
@@ -123,23 +135,6 @@
       }
 
 
-      //-------------------------------------------------------------------------------------
-      MercatorXofLongitude = function(lon) {
-        return lon * 20037508.34 / 180;
-      }
-
-      MercatorYofLatitude = function(lat) {
-        return (Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180)) * 20037508.34 / 180;
-      }
-      let cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
-      let leafletMap = L.map('map').setView([20, -0], 3);
-
-      //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
-      }).addTo(leafletMap);
 
       //d3.json('data/world-countries.json', function(data) {geojson = L.geoJson(data).addTo(leafletMap);});
 
@@ -220,7 +215,7 @@
         console.log("updated at  " + new Date().setTime(new Date().getTime() - start.getTime()) + " ms ");
 
       }
-      
+
 
       function mapmove(e) {
         let mapBounds = leafletMap.getBounds();
@@ -229,10 +224,7 @@
         let MAX_NUMBER_OF_POINTS = 30000
         let proportion = MAX_NUMBER_OF_POINTS / Math.max(1, subset.length);
         subset = subset.filter(function(d) {
-          if (proportion > 0.95) {
-            return true;
-          }
-          return d.id % Math.ceil(1/proportion) == 1;
+          return Math.random() < proportion;
         })
 
         let lat_spacing = Math.max(0.4 * (1 - proportion), 0) + 0.05;
