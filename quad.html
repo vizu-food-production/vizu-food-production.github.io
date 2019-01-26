@@ -8,6 +8,7 @@
   <style>
     body {
       font-size: 11px;
+      overflow: hidden;
     }
 
     text {
@@ -51,71 +52,69 @@
 
 
   <script>
-    var min_diff = 100;
-    var max_diff = -100;
+    let min_diff = 100;
+    let max_diff = -100;
 
     d3.csv('data/NewDataForStudents/2050_ssp1_he_cut2.csv', function(error, incidents) {
 
       function reformat(array) {
-        var data = [];
+        let data = [];
         array.map(function(d, i) {
-          var lon = +d.lon;
-          var lat = -+d.lat;
-          var lat_spacing = 0.05;
-          var lon_spacing = 0.05;
-          var p = {
+          let lon = +d.lon;
+          let lat = - +d.lat;
+          let lat_spacing = 0.045;
+          let lon_spacing = 0.045;
+          let cal_diff = Math.sign(+d['Δcal_per_ha']) * +d['cal_per_ha 2050'] / (+d['cal_per_ha 2050'] - +d['Δcal_per_ha'] + 1) * 100;
+          let p = {
             id: i,
             type: "Feature",
             geometry: {
-              coordinates: [[[lon-lon_spacing, lat-lat_spacing],
-               [lon-lon_spacing, lat+lat_spacing],
-               [lon+lon_spacing, lat+lat_spacing],
-               [lon+lon_spacing, lat-lat_spacing],
-               [lon-lon_spacing, lat-lat_spacing]]],
-               type: "Polygon"
-              //coordinates: [lon-lon_spacing, lat-lat_spacing],
-              //type: "Point"
+              coordinates: [
+                [
+                  [lon - lon_spacing, lat - lat_spacing],
+                  [lon - lon_spacing, lat + lat_spacing],
+                  [lon + lon_spacing, lat + lat_spacing],
+                  [lon + lon_spacing, lat - lat_spacing],
+                  [lon - lon_spacing, lat - lat_spacing]
+                ]
+              ],
+              type: "Polygon",
             },
-            diff: Math.sign(+d['Δcal_per_ha']) * +d['cal_per_ha 2050'] / (+d['cal_per_ha 2050'] - +d['Δcal_per_ha'] + 1) * 100,
-            //diff: +d['Calories 2050']
+            x: lon,
+            y: lat,
+            diff: cal_diff,
           };
           data.push(p);
-          if (p.diff < min_diff) {
-            min_diff = p.diff;
-          }
-          if (p.diff > max_diff) {
-            max_diff = p.diff;
-          }
 
         });
-        console.log('read csv' + ' min diff ' + min_diff + ' max: ' + max_diff);
         return data;
       }
-      var geoData = {
+      let geoData = {
         type: "FeatureCollection",
         features: reformat(incidents)
       };
 
 
 
-      var qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
+      let qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
         return {
-          x: data.geometry.coordinates[0][0][0],
-          y: data.geometry.coordinates[0][0][1],
+          x: data.x,
+          y: data.y,
           all: data
         };
       }));
 
 
+
       // Find the nodes within the specified rectangle.
       function search(quadtree, x0, y0, x3, y3) {
-        console.log(x0 + ' ' + '  ' + y0 + ' ' +  x3 + ' ' + y3)
-        var pts = [];
-        var subPts = [];
+        console.log(x0 + ' ' + '  ' + y0 + ' ' + x3 + ' ' + y3)
+        let pts = [];
+        let subPts = [];
         quadtree.visit(function(node, x1, y1, x2, y2) {
-          var p = node.point;
+          let p = node.point;
           if ((p) && (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3)) {
-              pts.push(p.all);
+            pts.push(p.all);
           }
           // if quad rect is outside of the search rect do nto search in sub nodes (returns true)
           return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
@@ -132,29 +131,36 @@
       MercatorYofLatitude = function(lat) {
         return (Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180)) * 20037508.34 / 180;
       }
-      var cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
-      var leafletMap = L.map('map').setView([20, -0], 3);
+      let cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
+      let leafletMap = L.map('map').setView([20, -0], 3);
 
       //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
- attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
- subdomains: 'abcd',
- maxZoom: 19
-}).addTo(leafletMap);
-      var svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
-      var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(leafletMap);
+
+      //d3.json('data/world-countries.json', function(data) {geojson = L.geoJson(data).addTo(leafletMap);});
+
+
+
+      let svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
+
+
+      let g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 
       // Use Leaflet to implement a D3 geometric transformation.
       function projectPoint(x, y) {
-        var point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
+        let point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
         this.stream.point(point.x, point.y);
       }
 
-      var transform = d3.geo.transform({
+      let transform = d3.geo.transform({
         point: projectPoint
       });
-      var path = d3.geo.path().projection(transform);
+      let path = d3.geo.path().projection(transform);
 
 
 
@@ -166,20 +172,20 @@
 
 
       function getZoomScale() {
-        var mapWidth = leafletMap.getSize().x;
-        var bounds = leafletMap.getBounds();
-        var planarWidth = MercatorXofLongitude(bounds.getEast()) - MercatorXofLongitude(bounds.getWest());
+        let mapWidth = leafletMap.getSize().x;
+        let bounds = leafletMap.getBounds();
+        let planarWidth = MercatorXofLongitude(bounds.getEast()) - MercatorXofLongitude(bounds.getWest());
         return planarWidth;
 
       }
 
       function redrawSubset(subset) {
-        var bounds = path.bounds({
+        let bounds = path.bounds({
           type: "FeatureCollection",
           features: subset
         });
-        var topLeft = bounds[0];
-        var bottomRight = bounds[1];
+        let topLeft = bounds[0];
+        let bottomRight = bounds[1];
 
 
         svg.attr("width", bottomRight[0] - topLeft[0])
@@ -190,10 +196,10 @@
 
         g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
-        var start = new Date();
+        let start = new Date();
 
 
-        var points = g.selectAll("path")
+        let points = g.selectAll("path")
           .data(subset, function(d) {
             return d.id;
           });
@@ -214,21 +220,50 @@
         console.log("updated at  " + new Date().setTime(new Date().getTime() - start.getTime()) + " ms ");
 
       }
+      
 
       function mapmove(e) {
-        var mapBounds = leafletMap.getBounds();
-        var subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
+        let mapBounds = leafletMap.getBounds();
+        let subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
         console.log("subset: " + subset.length);
-        var MAX_NUMBER_OF_POINTS = 30000
-        var proportion = MAX_NUMBER_OF_POINTS / Math.max(1, subset.length);
+        let MAX_NUMBER_OF_POINTS = 30000
+        let proportion = MAX_NUMBER_OF_POINTS / Math.max(1, subset.length);
         subset = subset.filter(function(d) {
-          return Math.random() < proportion
+          if (proportion > 0.95) {
+            return true;
+          }
+          return d.id % Math.ceil(1/proportion) == 1;
         })
+
+        let lat_spacing = Math.max(0.4 * (1 - proportion), 0) + 0.05;
+        let lon_spacing = lat_spacing;
+        subset = subset.map(function(d, i) {
+          let lon = d.x;
+          let lat = d.y;
+          d.geometry.coordinates = [
+            [
+              [lon - lon_spacing, lat - lat_spacing],
+              [lon - lon_spacing, lat + lat_spacing],
+              [lon + lon_spacing, lat + lat_spacing],
+              [lon + lon_spacing, lat - lat_spacing],
+              [lon - lon_spacing, lat - lat_spacing]
+            ]
+          ];
+          return d;
+        });
+
+        console.log("proportion: " + proportion);
         console.log("subset: " + subset.length);
         redrawSubset(subset);
 
       }
 
+    }).on("progress", function(event) {
+      //update progress bar
+      if (d3.event.lengthComputable) {
+        let percentComplete = Math.round(d3.event.loaded * 100 / d3.event.total);
+        console.log(percentComplete);
+      }
     });
   </script>
 </body>
