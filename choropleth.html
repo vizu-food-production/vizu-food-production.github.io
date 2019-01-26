@@ -4,7 +4,7 @@
    <title>V2</title>
    <meta charset="utf-8">
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css" /> 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
    <style>
    body {
     font-size: 11px;
@@ -28,7 +28,7 @@
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
   }
- 
+
   .legend {
     line-height: 18px;
     color: #000;
@@ -47,7 +47,7 @@
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
 <script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
-<script src="https://d3js.org/topojson.v1.min.js"></script>  
+<script src="https://d3js.org/topojson.v1.min.js"></script>
 </head>
 <body>
     <div id="map"></div>
@@ -59,10 +59,10 @@
         // User Parameters (...You can change these...)
    var legend0 = 0, legend1 = 20, legend2 = 40, legend3 = 60, legend4 = 80, legend5 = 100; // Must be 6 ranges
    var legend_suffix = '%';                               // If no prefix is required then use ""
-   var stat_name = 'Sufficiency in 2050';    // This will be displayed on the map 
+   var stat_name = 'Sufficiency in 2050';    // This will be displayed on the map
    var colour_scheme = 'R2G';                             // Either: 'Purple', 'Red', Blue, 'Green', 'Orange', 'R2G'
 
-   var borders = 'http://enjalot.github.io/wwsd/data/world/world-110m.geojson';
+   var borders = 'data/world-110m.geojson';
 
    var fmtn = d3.format(",.0f"); // Formats all numbers with commas and 0dp
    var fmtph = d3.format(".1%");  // Formats percentages with % and 1dp (only for hover)
@@ -76,11 +76,11 @@
        maxZoom: 10
      }).addTo(map);
 
-   
- 
+
+
   var topoLayer = new L.GeoJSON();
 
-   
+
   // Possible Colour Schemes
   var colourmatrix = {Purple: ['#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#4a1486']
   ,Red: ["#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d"]
@@ -89,7 +89,7 @@
   ,Orange:["#fdd0a2", "#fdae6b", "#fd8d3c", "#f16913", "#d94801", "#8c2d04"]
   ,R2G:["#cb181d","#fb6a4a","#fcbba1","#c7e9c0","#74c476","#238b45"]};
 
-  // Import data and wrap around 
+  // Import data and wrap around
   d3.csv("data/choropleth/agg_countries_2050_ssp1.csv", function(data) {
 
 
@@ -113,12 +113,12 @@
 
 
   // Draws the boundary data on the map
-  function addTopoData(topoData) { 
+  function addTopoData(topoData) {
      topoLayer.addData(topoData);
      topoLayer.addTo(map)
      topoLayer.eachLayer(handleLayer);
  }
- 
+
   // Set the style of the boundary data layer (fill color based on data values)
   function handleLayer(layer) {
     layer.setStyle({ fillColor : getColor(mapLookup.get(layer.feature.properties.name)),
@@ -143,7 +143,7 @@
 
 
   // Behaviour when mouseover an area
-  function enterLayer(){  
+  function enterLayer(){
      this.setStyle({ weight: 2, opacity: 1 });
 
        var areaname = this.feature.properties.name;
@@ -151,7 +151,7 @@
        info.update = function () {
         this._div.innerHTML = stat_name + ' <br/> ' + areaname + ' <br/> ' + fmtn(mapLookup.get(areaname)) + legend_suffix;
     };
-    info.addTo(map); 
+    info.addTo(map);
 }
   // Behaviour when mouseout an area
   function leaveLayer(){
@@ -161,7 +161,7 @@
         this._div.innerHTML = 'Hover over an area for more information';
     };
     info.addTo(map);
-}          
+}
 
 
   // Add legend (6 ranges)
