@@ -144,10 +144,10 @@
   function enterLayer(){
      this.setStyle({ weight: 2, opacity: 1 });
 
-       var areaname = this.feature.properties.name;
+       var country = this.feature.properties.name;
        // method that we will use to update the tooltip feature
        info.update = function () {
-        this._div.innerHTML = stat_name + ' <br/> ' + areaname + ' <br/> ' + fmtn(mapLookup.get(areaname)) + legend_suffix;
+        this._div.innerHTML = country + ' <br/> ' + stat_name + ': ' + fmtn(mapLookup.get(areaname)) + legend_suffix;
     };
     info.addTo(map);
 }
@@ -156,7 +156,7 @@
      this.setStyle({ weight: 0.5 });
        // method that we will use to reset the tooltip feature
        info.update = function () {
-        this._div.innerHTML = 'Hover over an area for more information';
+        this._div.innerHTML = 'Hover over a country for more information';
     };
     info.addTo(map);
 }
