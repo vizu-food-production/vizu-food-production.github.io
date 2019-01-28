@@ -35,7 +35,6 @@
       width: 100%;
       background-color: #333;
     }
-
   </style>
 
 </head>
@@ -50,8 +49,8 @@
   <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <script src="lib/pace.min.js"></script>
-  <link href="lib/style_loader.css" rel="stylesheet" />
+  <script src='lib/nprogress.js'></script>
+  <link rel='stylesheet' href='lib/nprogress.css' />
 
 
   <script>
@@ -67,30 +66,21 @@
       maxZoom: 19
     }).addTo(leafletMap);
 
-
+    NProgress.start();
+    NProgress.inc();
     d3.csv('data/NewDataForStudents/2050_ssp1_he_cut2.csv', function(error, incidents) {
-
+      NProgress.inc();
+      console.log('csv read ');
       function reformat(array) {
         let data = [];
         array.map(function(d, i) {
           let lon = +d.lon;
           let lat = - +d.lat;
-          let lat_spacing = 0.045;
-          let lon_spacing = 0.045;
           let cal_diff = Math.sign(+d['Δcal_per_ha']) * +d['cal_per_ha 2050'] / (+d['cal_per_ha 2050'] - +d['Δcal_per_ha'] + 1) * 100;
           let p = {
             id: i,
             type: "Feature",
             geometry: {
-              coordinates: [
-                [
-                  [lon - lon_spacing, lat - lat_spacing],
-                  [lon - lon_spacing, lat + lat_spacing],
-                  [lon + lon_spacing, lat + lat_spacing],
-                  [lon + lon_spacing, lat - lat_spacing],
-                  [lon - lon_spacing, lat - lat_spacing]
-                ]
-              ],
               type: "Polygon",
             },
             x: lon,
@@ -107,7 +97,7 @@
         features: reformat(incidents)
       };
 
-
+      NProgress.inc();
 
       let qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
         return {
@@ -116,6 +106,8 @@
           all: data
         };
       }));
+      NProgress.done(true);
+      console.log('quadtree created')
 
 
 
@@ -228,7 +220,7 @@
           return Math.random() < proportion;
         })
 
-        let lat_spacing = Math.max(0.4 * (1 - proportion), 0) + 0.05;
+        let lat_spacing = Math.max(0.02 / proportion, 0) + 0.05;
         let lon_spacing = lat_spacing;
         subset = subset.map(function(d, i) {
           let lon = d.x;
