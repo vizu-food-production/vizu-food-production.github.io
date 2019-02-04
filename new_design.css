@@ -1,0 +1,95 @@
+html, body, figure {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+/* Default font and size */
+body {
+  position: fixed;
+  /* center vertically */
+  display: block;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-content: center; 
+
+  /* default text */
+  font-family: sans-serif;
+  font-size: 1rem;
+  font-family: "Open Sans",sans-serif;
+  color: #333;
+}
+
+
+#map {
+  position: absolute;
+    height: 100%;
+    width: 70%;
+    background-color: #333;
+}
+
+.side_panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 30%;
+  background-color: rgb(250, 250, 250);
+  color: black;
+  height: 100%;
+  border-left: 1px solid #ccc;
+}
+
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-left: none;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  width: calc(100%  /3);
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 1.6rem;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 0% 5%;
+  line-height: 1.5rem;
+}
+
+.checkbox {
+  padding: 0% 5%; 
+  font-size: 1.6rem;
+  line-height: 2.5rem;
+}
+
+input[type=checkbox] {
+  bottom: 5px;
+}
+
+
+label {
+  font-weight: 400 !important;
+}
+

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="new_design.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
+
+	<body>
+		<div id="map"></div>
+
+
+		<div class="side_panel">
+			<div class="tab">
+				<button class="tablinks" onclick="plot_data(event, 'changes')" id="defaultOpen">Forecasted Changes</button>
+				<button class="tablinks" onclick="plot_data(event, 'crop')">Crop Production</button>
+				<button class="tablinks" onclick="plot_data(event, 'sufficiency')">Food Sufficiency</button>
+			</div>
+
+			<div id="changes" class="tabcontent">
+				<h3>Select forecasted change to visualize:</h3>
+				<select class="selectpicker" title="Choose one of the following..." data-width="75%">
+					<optgroup label="Climate">
+						<option>Total precipitation</option>
+						<option>Mean temperature</option>
+					</optgroup> 
+					<optgroup label="Management" disabled>
+						<option>Irrigation</option>
+						<option>Fertilizers</option>
+						<option>Mechanization (GDP)</option>
+					</optgroup>
+					<optgroup label="Land Use">
+						<option>Cropland Extent</option>
+					</optgroup>
+					<optgroup label="Population">
+						<option>Population</option>
+					</optgroup> 
+				</select>
+			</div>
+
+			<div id="crop" class="tabcontent">
+				<h3>Select value to visualize:</h3>
+				<select class="selectpicker" title="Choose one of the following..." data-width="75%">
+					<option>Crop Production</option>
+					<option>Crop Yields</option> 
+				</select> 
+			</div>
+
+			<div id="sufficiency" class="tabcontent">
+				<h3>Select dietary assumptions:</h3>
+				<form>
+					<label class="checkbox">
+						<input type="checkbox" value="" disabled>Current animal consumption (19%)</label> 
+					<label class="checkbox">
+						<input type="checkbox" value="" disabled>Forecasted diet projection (Bodirsky)</label>
+					<label class="checkbox">
+						<input type="checkbox" value="" disabled>Vegetarian diet</label> 
+					<label class="checkbox">
+						<input type="checkbox" value="" disabled>Vegan diet</label> 
+				</form>
+			</div>
+		</div>
+
+		<script src="new_design.js"></script>
+	</body>
+	</html> 
+
