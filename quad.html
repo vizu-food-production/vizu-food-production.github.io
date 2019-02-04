@@ -71,6 +71,7 @@
     d3.csv('data/NewDataForStudents/2050_ssp1_he_cut2.csv', function(error, incidents) {
       NProgress.inc();
       console.log('csv read ');
+
       function reformat(array) {
         let data = [];
         array.map(function(d, i) {
@@ -216,12 +217,33 @@
         console.log("subset: " + subset.length);
         let MAX_NUMBER_OF_POINTS = 30000
         let proportion = MAX_NUMBER_OF_POINTS / Math.max(1, subset.length);
+        let lat_spacing = 0;
+        let lon_spacing = 0;
+        if (proportion >= 1) {
+          lat_spacing = 0.04;
+          lon_spacing = lat_spacing;
+        } else if (proportion >= 0.25) {
+          lat_spacing = 0.15;
+          lon_spacing = lat_spacing;
+          proportion = 0.25;
+        } else if (proportion >= 0.1111) {
+          lat_spacing = 0.25;
+          lon_spacing = lat_spacing;
+          proportion =  0.1111;
+        } else if (proportion >= 0.0277) {
+          lat_spacing = 0.50;
+          lon_spacing = lat_spacing;
+          proportion = 0.0277;
+        }
+        else {
+          lat_spacing = 0.90;
+          lon_spacing = lat_spacing;
+          proportion = 0.008;
+        }
         subset = subset.filter(function(d) {
-          return Math.random() < proportion;
+          return d.id % Math.ceil(1 / proportion) == 0;
         })
 
-        let lat_spacing = Math.max(0.02 / proportion, 0) + 0.05;
-        let lon_spacing = lat_spacing;
         subset = subset.map(function(d, i) {
           let lon = d.x;
           let lat = d.y;
