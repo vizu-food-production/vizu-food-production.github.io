@@ -17,9 +17,17 @@
 
 		<div class="side_panel">
 			<div class="tab">
-				<button class="tablinks" onclick="plot_data(event, 'changes')" id="defaultOpen">Forecasted Changes</button>
-				<button class="tablinks" onclick="plot_data(event, 'crop')">Crop Production</button>
+				<button class="tablinks" onclick="plot_data(event, 'crop')" id="defaultOpen">Crop Production</button>
+				<button class="tablinks" onclick="plot_data(event, 'changes')">Forecasted Changes</button>
 				<button class="tablinks" onclick="plot_data(event, 'sufficiency')">Food Sufficiency</button>
+			</div>
+
+			<div id="crop" class="tabcontent">
+				<h3>Select value to visualize:</h3>
+				<select class="selectpicker" title="Choose one of the following..." data-width="75%">
+					<option>Crop Production</option>
+					<option>Crop Yields</option> 
+				</select> 
 			</div>
 
 			<div id="changes" class="tabcontent">
@@ -41,14 +49,6 @@
 						<option>Population</option>
 					</optgroup> 
 				</select>
-			</div>
-
-			<div id="crop" class="tabcontent">
-				<h3>Select value to visualize:</h3>
-				<select class="selectpicker" title="Choose one of the following..." data-width="75%">
-					<option>Crop Production</option>
-					<option>Crop Yields</option> 
-				</select> 
 			</div>
 
 			<div id="sufficiency" class="tabcontent">
