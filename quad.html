@@ -61,217 +61,246 @@
 
     //L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(leafletMap);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19
+      maxZoom: 12
     }).addTo(leafletMap);
 
     NProgress.start();
     NProgress.inc();
-    d3.csv('data/NewDataForStudents/2050_ssp1_he_cut2.csv', function(error, incidents) {
-      NProgress.inc();
-      console.log('csv read ');
 
-      function reformat(array) {
-        let data = [];
-        array.map(function(d, i) {
-          let lon = +d.lon;
-          let lat = - +d.lat;
-          let cal_diff = Math.sign(+d['Δcal_per_ha']) * +d['cal_per_ha 2050'] / (+d['cal_per_ha 2050'] - +d['Δcal_per_ha'] + 1) * 100;
-          let p = {
-            id: i,
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-            },
-            x: lon,
-            y: lat,
-            diff: cal_diff,
-          };
-          data.push(p);
-
-        });
-        return data;
-      }
-      let geoData = {
-        type: "FeatureCollection",
-        features: reformat(incidents)
-      };
-
-      NProgress.inc();
-
-      let qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
-        return {
-          x: data.x,
-          y: data.y,
-          all: data
-        };
-      }));
-      NProgress.done(true);
-      console.log('quadtree created')
-
-
-
-      // Find the nodes within the specified rectangle.
-      function search(quadtree, x0, y0, x3, y3) {
-        console.log(x0 + ' ' + '  ' + y0 + ' ' + x3 + ' ' + y3)
-        let pts = [];
-        let subPts = [];
-        quadtree.visit(function(node, x1, y1, x2, y2) {
-          let p = node.point;
-          if ((p) && (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3)) {
-            pts.push(p.all);
-          }
-          // if quad rect is outside of the search rect do nto search in sub nodes (returns true)
-          return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
-        });
-        return pts;
-      }
-
-
-
-      //d3.json('data/world-countries.json', function(data) {geojson = L.geoJson(data).addTo(leafletMap);});
-
-
-
-      let svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
-
-
-      let g = svg.append("g").attr("class", "leaflet-zoom-hide");
-
-
-      // Use Leaflet to implement a D3 geometric transformation.
-      function projectPoint(x, y) {
-        let point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
-        this.stream.point(point.x, point.y);
-      }
-
-      let transform = d3.geo.transform({
-        point: projectPoint
-      });
-      let path = d3.geo.path().projection(transform);
-
-
-
-      leafletMap.on('moveend', mapmove);
-
-      mapmove();
+    let data = [];
+    let world_data = [];
 
 
 
 
-      function getZoomScale() {
-        let mapWidth = leafletMap.getSize().x;
-        let bounds = leafletMap.getBounds();
-        let planarWidth = MercatorXofLongitude(bounds.getEast()) - MercatorXofLongitude(bounds.getWest());
-        return planarWidth;
+    d3.csv("data/2050/SSP1/SSP1_World.csv", function(world_points) {
 
-      }
+          world_points.map(function(csv, i) {
+            let change_in_prod = parseFloat(csv.percent_change_in_production)
+            if (isNaN(change_in_prod)) {
+              change_in_prod = Number.MAX_VALUE
+            }
+              let p = {
+                id: i,
+                type: "Feature",
+                geometry: {
+                  type: "Polygon",
+                  coordinates: [
+                    [
+                      [+csv.min_lon, -(+csv.min_lat)],
+                      [+csv.min_lon, -(+csv.max_lat)],
+                      [+csv.max_lon, -(+csv.max_lat)],
+                      [+csv.max_lon, -(+csv.min_lat)],
+                      [+csv.min_lon, -(+csv.min_lat)]
+                    ]
+                  ]
+                },
+                diff: change_in_prod,
+              };
+              world_data.push(p);
+            });
 
-      function redrawSubset(subset) {
-        let bounds = path.bounds({
-          type: "FeatureCollection",
-          features: subset
-        });
-        let topLeft = bounds[0];
-        let bottomRight = bounds[1];
 
 
-        svg.attr("width", bottomRight[0] - topLeft[0])
-          .attr("height", bottomRight[1] - topLeft[1])
-          .style("left", topLeft[0] + "px")
-          .style("top", topLeft[1] + "px");
+
+            let svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
 
 
-        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-
-        let start = new Date();
+            let g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 
-        let points = g.selectAll("path")
-          .data(subset, function(d) {
-            return d.id;
+            // Use Leaflet to implement a D3 geometric transformation.
+            function projectPoint(x, y) {
+              let point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
+              this.stream.point(point.x, point.y);
+            }
+
+            let transform = d3.geo.transform({
+              point: projectPoint
+            });
+            let path = d3.geo.path().projection(transform);
+
+
+            function redrawSubset(subset) {
+              let bounds = path.bounds({
+                type: "FeatureCollection",
+                features: subset
+              });
+              let topLeft = bounds[0];
+              let bottomRight = bounds[1];
+
+
+              svg.attr("width", bottomRight[0] - topLeft[0])
+                .attr("height", bottomRight[1] - topLeft[1])
+                .style("left", topLeft[0] + "px")
+                .style("top", topLeft[1] + "px");
+
+
+              g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+
+              let start = new Date();
+
+
+              let points = g.selectAll("path")
+                .data(subset, function(d) {
+                  return d.id;
+                });
+              points.enter().append("path");
+              points.exit().remove();
+              points.attr("d", path);
+
+              const colorScale = d3.scale.linear()
+                .domain([-100, 0, 100])
+                .range(['#C11432', '#FDD10A', '#66A64F'])
+
+              colorScale.clamp(true)
+              points.style("fill", function(d) {
+                return colorScale(d.diff);
+              });
+
+
+              console.log("updated at  " + new Date().setTime(new Date().getTime() - start.getTime()) + " ms ");
+
+            }
+            console.log(world_data[100].geometry.coordinates[0]);
+            redrawSubset(world_data);
+
+
+
+            d3.csv('data/NewDataForStudents/2050_ssp1_he_cut2.csv', function(error, points) {
+              NProgress.inc();
+              console.log('csv read ');
+              points.map(function(d, i) {
+                let lon = +d.lon;
+                let lat = - +d.lat;
+                let cal_diff = Math.sign(+d['Δcal_per_ha']) * +d['cal_per_ha 2050'] / (+d['cal_per_ha 2050'] - +d['Δcal_per_ha'] + 1) * 100;
+                let p = {
+                  id: i,
+                  type: "Feature",
+                  geometry: {
+                    type: "Polygon",
+                  },
+                  x: lon,
+                  y: lat,
+                  diff: cal_diff,
+                };
+                data.push(p);
+
+              });
+
+              let geoData = {
+                type: "FeatureCollection",
+                features: data
+              };
+
+              NProgress.inc();
+
+              let qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
+                return {
+                  x: data.x,
+                  y: data.y,
+                  all: data
+                };
+              }));
+              NProgress.done(true);
+              console.log('quadtree created')
+
+
+
+              // Find the nodes within the specified rectangle.
+              function search(quadtree, x0, y0, x3, y3) {
+                console.log(x0 + ' ' + '  ' + y0 + ' ' + x3 + ' ' + y3)
+                let pts = [];
+                let subPts = [];
+                quadtree.visit(function(node, x1, y1, x2, y2) {
+                  let p = node.point;
+                  if ((p) && (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3)) {
+                    pts.push(p.all);
+                  }
+                  // if quad rect is outside of the search rect do nto search in sub nodes (returns true)
+                  return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+                });
+                return pts;
+              }
+
+
+
+              //d3.json('data/world-countries.json', function(data) {geojson = L.geoJson(data).addTo(leafletMap);});
+
+
+              leafletMap.on('moveend', mapmove);
+
+              mapmove();
+
+
+
+
+              function getZoomScale() {
+                let mapWidth = leafletMap.getSize().x;
+                let bounds = leafletMap.getBounds();
+                let planarWidth = MercatorXofLongitude(bounds.getEast()) - MercatorXofLongitude(bounds.getWest());
+                return planarWidth;
+
+              }
+
+
+
+
+              function mapmove(e) {
+                let mapBounds = leafletMap.getBounds();
+                let subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
+
+                let MAX_NUMBER_OF_POINTS = 30000
+                let proportion = MAX_NUMBER_OF_POINTS / Math.max(1, subset.length);
+                let lat_spacing = 0;
+                let lon_spacing = 0;
+                if (proportion >= 1) {
+                  lat_spacing = 0.04;
+                  lon_spacing = lat_spacing;
+                } else if (proportion >= 0.20) {
+                  lat_spacing = 0.15;
+                  lon_spacing = lat_spacing;
+                  proportion = 0.25;
+                } else {
+                  console.log('here')
+                  console.log(world_data.length)
+                  return redrawSubset(world_data)
+                }
+
+                console.log('here1')
+                subset = subset.filter(function(d) {
+                  return d.id % Math.ceil(1 / proportion) == 0;
+                })
+
+                subset = subset.map(function(d, i) {
+                  let lon = d.x;
+                  let lat = d.y;
+                  d.geometry.coordinates = [
+                    [
+                      [lon - lon_spacing, lat - lat_spacing],
+                      [lon - lon_spacing, lat + lat_spacing],
+                      [lon + lon_spacing, lat + lat_spacing],
+                      [lon + lon_spacing, lat - lat_spacing],
+                      [lon - lon_spacing, lat - lat_spacing]
+                    ]
+                    ];
+                  return d;
+                });
+
+                console.log("proportion: " + proportion);
+                console.log("subset: " + subset.length);
+                redrawSubset(subset);
+
+              }
+
+            }).on("progress", function(event) {
+              //update progress bar
+              if (d3.event.lengthComputable) {
+                let percentComplete = Math.round(d3.event.loaded * 100 / d3.event.total);
+                console.log(percentComplete);
+              }
+            })
           });
-        points.enter().append("path");
-        points.exit().remove();
-        points.attr("d", path);
-
-        const colorScale = d3.scale.linear()
-          .domain([-100, 0, 100])
-          .range(['#C11432', '#FDD10A', '#66A64F'])
-
-        colorScale.clamp(true)
-        points.style("fill", function(d) {
-          return colorScale(d.diff);
-        });
-
-
-        console.log("updated at  " + new Date().setTime(new Date().getTime() - start.getTime()) + " ms ");
-
-      }
-
-
-      function mapmove(e) {
-        let mapBounds = leafletMap.getBounds();
-        let subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
-        console.log("subset: " + subset.length);
-        let MAX_NUMBER_OF_POINTS = 30000
-        let proportion = MAX_NUMBER_OF_POINTS / Math.max(1, subset.length);
-        let lat_spacing = 0;
-        let lon_spacing = 0;
-        if (proportion >= 1) {
-          lat_spacing = 0.04;
-          lon_spacing = lat_spacing;
-        } else if (proportion >= 0.25) {
-          lat_spacing = 0.15;
-          lon_spacing = lat_spacing;
-          proportion = 0.25;
-        } else if (proportion >= 0.1111) {
-          lat_spacing = 0.25;
-          lon_spacing = lat_spacing;
-          proportion =  0.1111;
-        } else if (proportion >= 0.0277) {
-          lat_spacing = 0.50;
-          lon_spacing = lat_spacing;
-          proportion = 0.0277;
-        }
-        else {
-          lat_spacing = 0.90;
-          lon_spacing = lat_spacing;
-          proportion = 0.008;
-        }
-        subset = subset.filter(function(d) {
-          return d.id % Math.ceil(1 / proportion) == 0;
-        })
-
-        subset = subset.map(function(d, i) {
-          let lon = d.x;
-          let lat = d.y;
-          d.geometry.coordinates = [
-            [
-              [lon - lon_spacing, lat - lat_spacing],
-              [lon - lon_spacing, lat + lat_spacing],
-              [lon + lon_spacing, lat + lat_spacing],
-              [lon + lon_spacing, lat - lat_spacing],
-              [lon - lon_spacing, lat - lat_spacing]
-            ]
-          ];
-          return d;
-        });
-
-        console.log("proportion: " + proportion);
-        console.log("subset: " + subset.length);
-        redrawSubset(subset);
-
-      }
-
-    }).on("progress", function(event) {
-      //update progress bar
-      if (d3.event.lengthComputable) {
-        let percentComplete = Math.round(d3.event.loaded * 100 / d3.event.total);
-        console.log(percentComplete);
-      }
-    });
   </script>
 </body>
 
