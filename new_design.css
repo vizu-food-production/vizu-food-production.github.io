@@ -23,12 +23,20 @@ body {
 }
 
 
-#map {
+#maps {
   position: absolute;
-    height: 100%;
-    width: 70%;
-    background-color: #333;
+  height: 100%;
+  width: 70%;
+  background-color: #333;
 }
+
+.map {
+  width: 50%;
+  height: calc(100% /3);
+  border: 0.5px solid #ccc;
+  float: left;
+}
+
 
 .side_panel {
   position: fixed;
@@ -50,7 +58,7 @@ body {
 
 /* Style the buttons that are used to open the tab content */
 .tab button {
-  width: calc(100%  /3);
+  width: calc(100% /3);
   background-color: inherit;
   float: left;
   border: none;
