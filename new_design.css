@@ -30,13 +30,19 @@ body {
   background-color: #333;
 }
 
-.map {
+.map_six {
   width: 50%;
   height: calc(100% /3);
   border: 0.5px solid #ccc;
   float: left;
 }
 
+.map_two {
+  width: 100%;
+  height: 50%;
+  border: 0.5px solid #ccc;
+  float: left;
+}
 
 .side_panel {
   position: fixed;
@@ -101,3 +107,37 @@ label {
   font-weight: 400 !important;
 }
 
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Helvetica, sans-serif;
+    font-weight: bold;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+  }
+
+.legend {
+  line-height: 15px;
+  color: #000;
+}
+
+
+.legend i {
+    width: 15px;
+    height: 15px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.title_two {
+  font-size: 4rem;
+  color: yellow;
+}
+
+
+.title_six {
+  font-size: 2rem;
+  color: yellow;
+}

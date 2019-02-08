@@ -2,25 +2,29 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="new_design.css">
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 
+
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+	<script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
+	<script src="https://d3js.org/topojson.v1.min.js"></script>
+
+
+	<link rel="stylesheet" href="new_design.css">
+
+	<script src="scripts/L.Map.Sync.js"></script>
+
 	<body>
 		<div id="maps">
-			<div id="map1" class="map"></div>
-			<div id="map2" class="map"></div>
-			<div id="map3" class="map"></div>
-			<div id="map4" class="map"></div>
-			<div id="map5" class="map"></div>
-			<div id="map6" class="map"></div>
 		</div>
-
+		
 
 		<div class="side_panel">
 			<div class="tab">
@@ -62,18 +66,21 @@
 				<h3>Select dietary assumptions:</h3>
 				<form>
 					<label class="checkbox">
-						<input type="checkbox" value="" disabled>Current animal consumption (19%)</label> 
+						<input type="checkbox" value="" disabled>Current animal consumption (19%)
+					</label> 
 					<label class="checkbox">
-						<input type="checkbox" value="" disabled>Forecasted diet projection (Bodirsky)</label>
+						<input type="checkbox" value="" disabled>Forecasted diet projection (Bodirsky)
+					</label>
 					<label class="checkbox">
-						<input type="checkbox" value="" disabled>Vegetarian diet</label> 
+						<input type="checkbox" value="" disabled>Vegetarian diet
+					</label> 
 					<label class="checkbox">
-						<input type="checkbox" value="" disabled>Vegan diet</label> 
+						<input type="checkbox" value="" disabled>Vegan diet
+					</label> 
 				</form>
 			</div>
 		</div>
-
-		<script src="new_design.js"></script>
+	<script src="new_design.js"></script>
 	</body>
-	</html> 
+</html> 
 
